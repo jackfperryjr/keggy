@@ -8,7 +8,17 @@ load_dotenv()
 
 intents = discord.Intents.all()
 client = discord.Client(intents=intents)
-bot = commands.Bot(command_prefix='!',intents=intents)
+bot = commands.Bot(command_prefix='/',intents=intents)
+
+random_messages = [
+    'Here you go! 🍺',
+    'Coming right up! 🍺',
+    'Oh, uh, sorry... I\'m all out!',
+    '🍺',
+    'Sure! 🍺',
+    'Did someone ask for a beer? 🍺',
+    'One for you! And one for you! 🍺🍺'
+    ]
 
 @client.event
 async def on_ready():
@@ -16,31 +26,11 @@ async def on_ready():
 
 @client.event
 async def on_message(message):
-    random_messages = [
-        'Here you go! 🍺',
-        'Coming right up! 🍺',
-        'Oh, uh, sorry... I\'m all out!',
-        '🍺',
-        'Sure! 🍺',
-        'Did someone ask for a beer? 🍺',
-        'One for you! And one for you! 🍺🍺'
-    ]
-
     if 'beer' in message.content.lower():
         await message.channel.send(random.choice(random_messages))
 
 @bot.command(name='beer')
 async def beer(ctx):
-    random_messages = [
-        'Here you go! 🍺',
-        'Coming right up! 🍺',
-        'Oh, uh, sorry... I\'m all out!',
-        '🍺',
-        'Sure! 🍺',
-        'Did someone ask for a beer? 🍺',
-        'One for you! And one for you! 🍺🍺'
-    ]
-
     response = random.choice(random_messages)
     await ctx.send(response)
 
