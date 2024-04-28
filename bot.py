@@ -21,7 +21,9 @@ async def on_message(message):
         'Coming right up! 🍺',
         'Oh, uh, sorry... I\'m all out!',
         '🍺',
-        'Sure! 🍺'
+        'Sure! 🍺',
+        'Did someone ask for a beer? 🍺',
+        'One for you! And one for you! 🍺🍺'
     ]
 
     if 'beer' in message.content.lower():
