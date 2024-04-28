@@ -16,7 +16,8 @@ random_messages = [
     '🍺',
     'Sure! 🍺',
     'Did someone ask for a beer? 🍺',
-    'One for you! And one for you! 🍺🍺'
+    'One for you! And one for you! 🍺🍺',
+    'Beers all around! 🍺🍺🍺'
 ]
 
 @client.event
