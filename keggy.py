@@ -26,7 +26,7 @@ random_messages = [
     'Sure! 🍺',
     'Did someone ask for a beer? 🍺',
     'One for you! And one for you! 🍺🍺'
-    ]
+]
 
 # The client responds to events that happen,
 # in this case, once Keggy is connected to Discord
