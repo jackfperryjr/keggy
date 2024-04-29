@@ -9,14 +9,6 @@ intents = discord.Intents.all()
 client = discord.Client(intents=intents)
 bot = commands.Bot(command_prefix='/',intents=intents)
 
-channels = [
-    '1117941300466045050', # general
-    '1122709588442108034', # thundering-plains
-    '1122709849558487171', # adventure-league
-    '1233522005920452732', # the-cauldron
-    '1233522085205250160'  # monday-fiasco
-]
-
 random_messages = [
     'Here you go! 🍺',
     'Coming right up! 🍺',
