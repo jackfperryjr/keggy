@@ -50,7 +50,7 @@ async def on_member_join(member):
 async def on_message(message):
     if message.author == client.user:
         return
-    if client.user.mentioned_in(message) and 'celebrate' in message.content.lower():
+    if 'celebrate' in message.content.lower():
         await message.channel.send(random_messages[8])
     if client.user.mentioned_in(message) and 'help' in message.content.lower():
         await message.channel.send('Did someone need a beer? That\'s all I know how to do. If I hear someone mention a beer I\'ll be right there! (Or you can request a beer with `/beer`.)')
