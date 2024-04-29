@@ -1,13 +1,21 @@
 import os
 import random
 import discord
-from discord.ext import commands
+from discord.ext import commands, tasks
 from dotenv import load_dotenv
 
 load_dotenv()
 intents = discord.Intents.all()
 client = discord.Client(intents=intents)
 bot = commands.Bot(command_prefix='/',intents=intents)
+
+channels = [
+    '1117941300466045050', # general
+    '1122709588442108034', # thundering-plains
+    '1122709849558487171', # adventure-league
+    '1233522005920452732', # the-cauldron
+    '1233522085205250160'  # monday-fiasco
+]
 
 random_messages = [
     'Here you go! 🍺',
@@ -20,9 +28,30 @@ random_messages = [
     'Beers all around! 🍺🍺🍺'
 ]
 
+random_chatter = [
+    'Did someone call me?',
+    'Hi!',
+    'Who\'s there!?'
+]
+
+@tasks.loop(minutes=random.randint(60, 100))
+async def background_chatter():
+    await client.wait_until_ready()
+    while not client.is_closed:
+        channel = client.get_channel(random.choice(channels))
+        await channel.send(random.choice(random_messages))
+
 @client.event
 async def on_ready():
     print(f'{client.user.name} has connected to Discord!')
+    background_chatter.start()
+
+    for guild in client.guilds:
+        if guild.name == os.getenv('DISCORD_GUILD'):
+            break
+
+    members = '\n - '.join([member.name for member in guild.members])
+    print(f'Guild Members:\n - {members}')
 
 @client.event
 async def on_member_join(member):
