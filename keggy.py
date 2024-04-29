@@ -25,26 +25,13 @@ random_messages = [
     'Sure! 🍺',
     'Did someone ask for a beer? 🍺',
     'One for you! And one for you! 🍺🍺',
-    'Beers all around! 🍺🍺🍺'
+    'Beers all around! 🍺🍺🍺',
+    'Beers for everyone! 🍻 🍻 🍻'
 ]
-
-random_chatter = [
-    'Did someone call me?',
-    'Hi!',
-    'Who\'s there!?'
-]
-
-@tasks.loop(minutes=random.randint(60, 100))
-async def background_chatter():
-    await client.wait_until_ready()
-    while not client.is_closed:
-        channel = client.get_channel(random.choice(channels))
-        await channel.send(random.choice(random_messages))
 
 @client.event
 async def on_ready():
     print(f'{client.user.name} has connected to Discord!')
-    background_chatter.start()
 
     for guild in client.guilds:
         if guild.name == os.getenv('DISCORD_GUILD'):
@@ -63,6 +50,8 @@ async def on_member_join(member):
 async def on_message(message):
     if message.author == client.user:
         return
+    if client.user.mentioned_in(message) and 'celebrate' in message.content.lower():
+        await message.channel.send(random_messages[8])
     if client.user.mentioned_in(message) and 'help' in message.content.lower():
         await message.channel.send('Did someone need a beer? That\'s all I know how to do. If I hear someone mention a beer I\'ll be right there! (Or you can request a beer with `/beer`.)')
     if client.user.mentioned_in(message) and not 'help' in message.content.lower():
