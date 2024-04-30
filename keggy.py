@@ -1,13 +1,14 @@
 import os
 import random
 import discord
+import requests
 from discord.ext import commands, tasks
 from dotenv import load_dotenv
 
 load_dotenv()
 intents = discord.Intents.all()
 client = discord.Client(intents=intents)
-bot = commands.Bot(command_prefix='/',intents=intents)
+bot = commands.Bot(command_prefix='/', intents=intents)
 
 random_messages = [
     'Here you go! 🍺',
@@ -20,6 +21,26 @@ random_messages = [
     'Beers all around! 🍺🍺🍺',
     'Beers for everyone! 🍻 🍻 🍻'
 ]
+
+def get_drink():
+    r = requests.get('https://www.thecocktaildb.com/api/json/v1/1/random.php')
+    drink = r.json()['drinks'][0]
+
+    ingredients = []
+    for key in drink:
+        if 'strIngredient' in key and drink[key] != None:
+            strMeasure = key.replace('Ingredient', 'Measure')
+            if drink[strMeasure] != None:
+                ingredients.append(drink[strMeasure] + drink[key])
+            else:
+                ingredients.append(drink[key])
+    
+    return {
+        'name': drink['strDrink'],
+        'ingredients': ', '.join(ingredients[:-1]) + ' and ' + ingredients[-1],
+        'instructions': drink['strInstructions'],
+        'image': drink['strDrinkThumb']
+    }
 
 @client.event
 async def on_ready():
@@ -48,6 +69,17 @@ async def on_message(message):
         await message.channel.send('Did someone need a beer? That\'s all I know how to do. If I hear someone mention a beer I\'ll be right there! (Or you can request a beer with `/beer`.)')
     if client.user.mentioned_in(message) and not 'help' in message.content.lower():
         await message.channel.send('Hi! Did someone need a beer? 🍺')
+    if 'make me a drink' in message.content.lower():
+        drink = get_drink()
+
+        embed = discord.Embed(color = 0x303136, title="Here's a drink for you!")
+        for item in drink:
+            if (item == 'image'):
+                continue
+            embed.add_field(name=item, value=drink[item], inline=False)
+        embed.set_image(url=drink['image'])
+
+        await message.channel.send(embed = embed)
     if 'beer' in message.content.lower():
         await message.channel.send(random.choice(random_messages))
 
