@@ -8,12 +8,12 @@ class Kegerator:
 
   ### Fritz Mechanics
   def addFritz(self):
-    print("Fritz: ", self.getStoreValue("fritz"))
-    self.updateStore("fritz", self.getStoreValue("fritz") + 0.01)
+    self.updateStore("fritz", self.getStoreValue("fritz") + 1)
+    print("Fritz chance at", self.getStoreValue("fritz"), "percent.")
 
   def checkFritz(self):
     self.addFritz()
-    return self.getStoreValue("fritz") >= random.random()
+    return self.getStoreValue("fritz") >= random.randint(1, 100)
 
   def resetFrtiz(self):
     self.updateStore("fritz", 0)
