@@ -67,6 +67,7 @@ async def on_message(message):
     # Blocks on Fritz
     if keggy_store.checkFritz():
         keggy_store.resetFrtiz()
+        await message.add_reaction("❌")
         await message.channel.send(responses.getRandomFritzMessage())
         return
 
