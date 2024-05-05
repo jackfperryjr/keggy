@@ -1,4 +1,5 @@
 import os
+import re
 import random
 import discord
 import requests
@@ -40,6 +41,38 @@ def get_drink():
         'image': drink['strDrinkThumb']
     }
 
+def get_races(race=None):
+    if race == None:
+        r = requests.get(f'https://www.dnd5eapi.co/api/races')
+        return r.json()
+    if race != None:
+        r = requests.get(f'https://www.dnd5eapi.co/api/races/{race}')
+        return r.json()
+
+def get_monsters(monster_name=None,monster_cr=None):
+    if monster_name == None and monster_cr == None:
+        r = requests.get(f'https://www.dnd5eapi.co/api/monsters')
+        return r.json()
+    if monster_name == None and monster_cr != None:
+        r = requests.get(f'https://www.dnd5eapi.co/api/monsters?challenge_rating={monster_cr}')
+        return r.json()
+    if monster_name != None and monster_cr == None:
+        m = monster_name.strip().replace(' ', '-').lower()
+        r = requests.get(f'https://www.dnd5eapi.co/api/monsters/{m}')
+        return r.json()
+
+# def get_races():
+#     r = requests.get('https://www.dnd5eapi.co/api/races')
+#     return r.text
+
+# def get_races():
+#     r = requests.get('https://www.dnd5eapi.co/api/races')
+#     return r.text
+
+# def get_races():
+#     r = requests.get('https://www.dnd5eapi.co/api/races')
+#     return r.text
+
 @bot.event
 async def on_ready():
     print(f'{bot.user.name} has connected to Discord!')
@@ -63,8 +96,33 @@ async def on_message(message):
         return
     await bot.process_commands(message)
 
-    if bot.user.mentioned_in(message) and not 'help' in message.content.lower():
-        await message.channel.send('Sure, boss! Did someone need a beer? 🍺')
+    # if bot.user.mentioned_in(message) and not 'help' in message.content.lower():
+    #     await message.channel.send('Sure, boss! Did someone need a beer? 🍺')
+
+    if bot.user.mentioned_in(message) and 'tell me about' in message.content.lower() and 'monster' in message.content.lower():
+        await message.channel.send('Sure, boss!')
+        monster_in_message = re.search(r'tell me about the(.*?)monster', message.content).group(1)
+        monster_from_api = get_monsters(monster_name=monster_in_message)
+
+        if 'error' in monster_from_api:
+            await message.author.send('Oh, uh, I actually don\'t know that one!')
+            return
+
+        embed = discord.Embed(color = 0x303136, title=monster_in_message)
+        embed.add_field(name='size', value=monster_from_api['size'], inline=True)
+        embed.add_field(name='challenge_rating', value=monster_from_api['challenge_rating'], inline=True)
+        embed.add_field(name='strength', value=monster_from_api['strength'], inline=True)
+        embed.add_field(name='dexterity', value=monster_from_api['dexterity'], inline=True)
+        embed.add_field(name='constitution', value=monster_from_api['constitution'], inline=True)
+        embed.add_field(name='intelligence', value=monster_from_api['intelligence'], inline=True)
+        embed.add_field(name='wisdom', value=monster_from_api['wisdom'], inline=True)
+        embed.add_field(name='charisma', value=monster_from_api['charisma'], inline=True)
+        embed.add_field(name='hit_points', value=monster_from_api['hit_points'], inline=True)
+        embed.add_field(name='speed', value=monster_from_api['speed'], inline=False)
+        embed.add_field(name='armor_class', value=monster_from_api['armor_class'], inline=False)
+        embed.add_field(name='actions', value=monster_from_api['actions'], inline=False)
+        embed.add_field(name='special_abilities', value=monster_from_api['special_abilities'], inline=False)
+        await message.author.send(embed = embed)
 
     if 'make me a drink' in message.content.lower():
         emojis = ['🍸','🍷','🥃','🍹','☕']
@@ -127,6 +185,6 @@ async def celebrate(ctx):
     await ctx.send(response)
 
 try:
-    bot.run(os.getenv('DISCORD_TOKEN'))
+    bot.run(os.getenv('DISCORD_TOKEN_DEV'))
 except Exception as e:
     print(f"An error occurred: {e}")
