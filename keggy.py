@@ -1,24 +1,22 @@
 import os
 import random
 import discord
+import re
 import requests
 from discord.ext import commands
 from dotenv import load_dotenv
 
+from kegerator import Kegerator
+from responses import Responses
+from currency_utils import CurrencyUtils
+
+keggy_store = Kegerator()
+responses = Responses()
+currency_utils = CurrencyUtils()
+
 load_dotenv()
 intents = discord.Intents.all()
 bot = commands.Bot(command_prefix='/', intents=intents, help_command=None)
-
-random_messages = [
-    'Here you go! 🍺',
-    'Coming right up! 🍺',
-    'Oh, uh, sorry... I\'m all out!',
-    '🍺',
-    'Sure! 🍺',
-    'Did someone ask for a beer? 🍺',
-    'One for you! And one for you! 🍺🍺',
-    'Beers all around! 🍺🍺🍺'
-]
 
 def get_drink():
     r = requests.get('https://www.thecocktaildb.com/api/json/v1/1/random.php')
@@ -59,17 +57,28 @@ async def on_member_join(member):
 
 @bot.event
 async def on_message(message):
+    # Blocks the bot from responding to itself
     if message.author == bot.user:
         return
+    
+    # Process Bot Commands
     await bot.process_commands(message)
 
+    # Blocks on Fritz
+    if keggy_store.checkFritz():
+        keggy_store.resetFrtiz()
+        await message.channel.send(responses.getRandomFritzMessage())
+        return
+
+    if bot.user.mentioned_in(message) and 'help' in message.content.lower():
+        await message.channel.send('Did someone need a beer? That\'s all I know how to do. If I hear someone mention a beer I\'ll be right there! (Or you can request a beer with `/beer`.)')
+    
     if bot.user.mentioned_in(message) and not 'help' in message.content.lower():
         await message.channel.send('Sure, boss! Did someone need a beer? 🍺')
 
     if 'make me a drink' in message.content.lower():
-        emojis = ['🍸','🍷','🥃','🍹','☕']
+        await message.add_reaction(responses.getRandomEmoji())
         drink = get_drink()
-
         embed = discord.Embed(color = 0x303136, title="Here's a drink for you!")
         for item in drink:
             if (item == 'image'):
@@ -78,11 +87,10 @@ async def on_message(message):
         embed.set_image(url=drink['image'])
 
         message = await message.channel.send(embed = embed)
-        for emoji in emojis:
-            await message.add_reaction(emoji)
 
     if 'beer' in message.content.lower() and not '/' in message.content.lower():
-        await message.add_reaction('🍺')
+        await message.add_reaction(responses.getBeerEmoji())
+        await message.channel.send(responses.getRandomPositiveMessage())
 
 @bot.command()
 async def help(ctx, args=None):
@@ -118,11 +126,45 @@ async def help(ctx, args=None):
 
 @bot.command(name='beer',brief='Keggy gets you a beer.')
 async def beer(ctx):
-    response = random.choice(random_messages)
+    if (keggy_store.checkFritz()):
+        response = responses.getRandomFritzMessage()
+        await ctx.send(response)
+        return
+    response = responses.getRandomPositiveMessage()
+    await ctx.send(response)
+
+@bot.command()
+async def convert(ctx, arg):
+    if (keggy_store.checkFritz()):
+        response = responses.getRandomFritzMessage()
+        await ctx.send(response)
+        return
+
+    copper = currency_utils.convert_to_copper(arg)
+    response = f'That\'s {copper} copper pieces!'
+    await ctx.send(response)
+
+@bot.command()
+async def split_shares(ctx, arg):
+    if (keggy_store.checkFritz()):
+        response = responses.getRandomFritzMessage()
+        await ctx.send(response)
+        return
+
+    copper = currency_utils.convert_to_copper(arg)
+    split, remainder = currency_utils.split_copper(copper, 3)
+    split_currency = currency_utils.convert_to_currency(split)
+    remainder_currency = currency_utils.convert_to_currency(remainder)
+
+    response = f'Each person gets {split_currency["pp"]}pp {split_currency["gp"]}gp {split_currency["ep"]}ep {split_currency["sp"]}sp {split_currency["cp"]}cp. There are {remainder_currency["pp"]}pp {remainder_currency["gp"]}gp {remainder_currency["ep"]}ep {remainder_currency["sp"]}sp {remainder_currency["cp"]}cp left over.'
     await ctx.send(response)
 
 @bot.command(name='celebrate',brief='Keggy gets beers for everyone.')
 async def celebrate(ctx):
+    if (keggy_store.checkFritz()):
+        response = responses.getRandomFritzMessage()
+        await ctx.send(response)
+        return
     response = 'Beers for everyone! 🍻 🍻 🍻'
     await ctx.send(response)
 
