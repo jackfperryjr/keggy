@@ -196,8 +196,8 @@ async def beer(ctx):
     response = responses.getRandomPositiveMessage()
     await ctx.send(response)
 
-@bot.command()
-async def convert(ctx, arg, name='convert', brief='Keggy can convert coin denominations to coppers (cp) using this format: 12pp34gp56sp78cp.'):
+@bot.command(name='convert', brief='Keggy can convert coin denominations to coppers (cp) using this format: 12pp34gp56sp78cp.')
+async def convert(ctx, arg):
     if (keggy_store.checkFritz()):
         response = responses.getRandomFritzMessage()
         await ctx.send(response)
@@ -207,8 +207,8 @@ async def convert(ctx, arg, name='convert', brief='Keggy can convert coin denomi
     response = f'That\'s {copper} copper pieces!'
     await ctx.send(response)
 
-@bot.command()
-async def split_shares(ctx, arg, name='split_shares', brief='Keggy can split up the coin shares after using `/convert`.'):
+@bot.command(name='split_shares', brief='Keggy can split up the coin shares after using `/convert`.')
+async def split_shares(ctx, arg):
     if (keggy_store.checkFritz()):
         response = responses.getRandomFritzMessage()
         await ctx.send(response)
