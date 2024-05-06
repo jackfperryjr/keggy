@@ -2,7 +2,6 @@ import os
 import re
 import random
 import discord
-import re
 import requests
 from discord.ext import commands
 from dotenv import load_dotenv
