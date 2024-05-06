@@ -58,6 +58,41 @@ def get_monsters(monster_name=None,monster_cr=None):
         r = requests.get(f'https://www.dnd5eapi.co/api/monsters/{m}')
         return r.json()
 
+def get_stat_mod(stat_value):
+    match stat_value:
+        case stat_value if stat_value == 1:
+            return f'{stat_value} (-5)'
+        case stat_value if stat_value in range(2, 4):
+            return f'{stat_value} (-4)'
+        case stat_value if stat_value in range(4, 6):
+            return f'{stat_value} (-3)'
+        case stat_value if stat_value in range(6, 8):
+            return f'{stat_value} (-2)' 
+        case stat_value if stat_value in range(8, 10):
+            return f'{stat_value} (-1)' 
+        case stat_value if stat_value in range(10, 12):
+            return f'{stat_value} (+0)' 
+        case stat_value if stat_value in range(12, 14):
+            return f'{stat_value} (+1)' 
+        case stat_value if stat_value in range(14, 16):
+            return f'{stat_value} (+2)' 
+        case stat_value if stat_value in range(16, 18):
+            return f'{stat_value} (+3)' 
+        case stat_value if stat_value in range(18, 20):
+            return f'{stat_value} (+4)' 
+        case stat_value if stat_value in range(20, 22):
+            return f'{stat_value} (+5)' 
+        case stat_value if stat_value in range(22, 24):
+            return f'{stat_value} (+6)' 
+        case stat_value if stat_value in range(24, 26):
+            return f'{stat_value} (+7)' 
+        case stat_value if stat_value in range(26, 28):
+            return f'{stat_value} (+8)' 
+        case stat_value if stat_value in range(28, 30):
+            return f'{stat_value} (+9)' 
+        case stat_value if stat_value == 30:
+            return f'{stat_value} (+10)' 
+
 @bot.event
 async def on_ready():
     print(f'{bot.user.name} has connected to Discord!')
@@ -86,6 +121,7 @@ async def on_message(message):
     if bot.user.mentioned_in(message) and 'tell me about' in message.content.lower() and 'monster' in message.content.lower():
         await message.channel.send('Sure, boss! I\'ll send you a private message with details.')
         monster_in_message = re.search(r'tell me about(\s|a|the)(.*?)monster(s?)', message.content).group(2)
+        monster_in_message = monster_in_message.lstrip('a ').lstrip('the ')
         monster_from_api = get_monsters(monster_name=monster_in_message)
 
         if 'error' in monster_from_api:
@@ -96,12 +132,12 @@ async def on_message(message):
         embed.add_field(name='', value="---", inline=False)
         embed.add_field(name='', value=f'The **{monster_in_message}** is a *{monster_from_api["size"].lower()}* CR *{monster_from_api["challenge_rating"]}* *{monster_from_api["type"]}* type with *{monster_from_api["hit_points"]}* hit points. It can take the following actions and has the below stats:', inline=False)
         embed.add_field(name='STATS', value="", inline=False)
-        embed.add_field(name='', value=f'STR: {monster_from_api["strength"]}', inline=True)
-        embed.add_field(name='', value=f'DEX: {monster_from_api["dexterity"]}', inline=True)
-        embed.add_field(name='', value=f'CON: {monster_from_api["constitution"]}', inline=True)
-        embed.add_field(name='', value=f'INT: {monster_from_api["intelligence"]}', inline=True)
-        embed.add_field(name='', value=f'WIS: {monster_from_api["wisdom"]}', inline=True)
-        embed.add_field(name='', value=f'CHA: {monster_from_api["charisma"]}', inline=True)
+        embed.add_field(name='', value=f'STR: {get_stat_mod(monster_from_api["strength"])}', inline=True)
+        embed.add_field(name='', value=f'DEX: {get_stat_mod(monster_from_api["dexterity"])}', inline=True)
+        embed.add_field(name='', value=f'CON: {get_stat_mod(monster_from_api["constitution"])}', inline=True)
+        embed.add_field(name='', value=f'INT: {get_stat_mod(monster_from_api["intelligence"])}', inline=True)
+        embed.add_field(name='', value=f'WIS: {get_stat_mod(monster_from_api["wisdom"])}', inline=True)
+        embed.add_field(name='', value=f'CHA: {get_stat_mod(monster_from_api["charisma"])}', inline=True)
 
         embed.add_field(name='SPEED', value="", inline=False)
         for obj in monster_from_api['speed']:
