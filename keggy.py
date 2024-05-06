@@ -88,8 +88,6 @@ async def on_message(message):
         monster_in_message = re.search(r'tell me about(\s|a|the)(.*?)monster(s?)', message.content).group(2)
         monster_from_api = get_monsters(monster_name=monster_in_message)
 
-        print(monster_in_message)
-
         if 'error' in monster_from_api:
             await message.author.send('Oh, uh, sorry boss... I actually don\'t know that one!')
             return
