@@ -78,20 +78,19 @@ async def on_member_join(member):
 
 @bot.event
 async def on_message(message):
+    # Process Bot Commands
+    await bot.process_commands(message)
     # Blocks the bot from responding to itself
     if message.author == bot.user:
         return
-    
-    # Process Bot Commands
-    await bot.process_commands(message)
 
     if bot.user.mentioned_in(message) and 'tell me about' in message.content.lower() and 'monster' in message.content.lower():
-        await message.channel.send('Sure, boss!')
+        await message.channel.send('Sure, boss! I\'ll send you a private message with details.')
         monster_in_message = re.search(r'tell me about the(.*?)monster', message.content).group(1)
         monster_from_api = get_monsters(monster_name=monster_in_message)
 
         if 'error' in monster_from_api:
-            await message.author.send('Oh, uh, I actually don\'t know that one!')
+            await message.author.send('Oh, uh, sorry boss... I actually don\'t know that one!')
             return
 
         embed = discord.Embed(color = 0x303136, title=monster_in_message.upper())
@@ -133,19 +132,14 @@ async def on_message(message):
             embed.add_field(name="", value=f'**{key}**: {value}', inline=False)
 
         await message.author.send(embed = embed)
+    
     # Blocks on Fritz
     if keggy_store.checkFritz():
         keggy_store.resetFrtiz()
         await message.channel.send(responses.getRandomFritzMessage())
         return
 
-    if bot.user.mentioned_in(message) and 'help' in message.content.lower():
-        await message.channel.send('Did someone need a beer? That\'s all I know how to do. If I hear someone mention a beer I\'ll be right there! (Or you can request a beer with `/beer`.)')
-    
-    if bot.user.mentioned_in(message) and not 'help' in message.content.lower():
-        await message.channel.send('Sure, boss! Did someone need a beer? 🍺')
-
-    if 'make me a drink' in message.content.lower():
+    if bot.user.mentioned_in(message) and 'make me a drink' in message.content.lower():
         await message.add_reaction(responses.getRandomEmoji())
         drink = get_drink()
         embed = discord.Embed(color = 0x303136, title="Here's a drink for you!")
@@ -193,7 +187,7 @@ async def help(ctx, args=None):
     message = await ctx.send(embed=help_embed)
     await message.add_reaction('🍻')
 
-@bot.command(name='beer',brief='Keggy gets you a beer.')
+@bot.command(name='beer', brief='Keggy gets you a beer.')
 async def beer(ctx):
     if (keggy_store.checkFritz()):
         response = responses.getRandomFritzMessage()
@@ -203,7 +197,7 @@ async def beer(ctx):
     await ctx.send(response)
 
 @bot.command()
-async def convert(ctx, arg):
+async def convert(ctx, arg, name='convert', brief='Keggy can convert coin denominations to coppers (cp) using this format: 12pp34gp56sp78cp.'):
     if (keggy_store.checkFritz()):
         response = responses.getRandomFritzMessage()
         await ctx.send(response)
@@ -214,7 +208,7 @@ async def convert(ctx, arg):
     await ctx.send(response)
 
 @bot.command()
-async def split_shares(ctx, arg):
+async def split_shares(ctx, arg, name='split_shares', brief='Keggy can split up the coin shares after using `/convert`.'):
     if (keggy_store.checkFritz()):
         response = responses.getRandomFritzMessage()
         await ctx.send(response)
@@ -228,7 +222,7 @@ async def split_shares(ctx, arg):
     response = f'Each person gets {split_currency["pp"]}pp {split_currency["gp"]}gp {split_currency["ep"]}ep {split_currency["sp"]}sp {split_currency["cp"]}cp. There are {remainder_currency["pp"]}pp {remainder_currency["gp"]}gp {remainder_currency["ep"]}ep {remainder_currency["sp"]}sp {remainder_currency["cp"]}cp left over.'
     await ctx.send(response)
 
-@bot.command(name='celebrate',brief='Keggy gets beers for everyone.')
+@bot.command(name='celebrate', brief='Keggy gets beers for everyone.')
 async def celebrate(ctx):
     if (keggy_store.checkFritz()):
         response = responses.getRandomFritzMessage()
