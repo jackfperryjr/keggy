@@ -85,8 +85,10 @@ async def on_message(message):
 
     if bot.user.mentioned_in(message) and 'tell me about' in message.content.lower() and 'monster' in message.content.lower():
         await message.channel.send('Sure, boss! I\'ll send you a private message with details.')
-        monster_in_message = re.search(r'tell me about the(.*?)monster', message.content).group(1)
+        monster_in_message = re.search(r'tell me about(\s|a|the)(.*?)monster(s?)', message.content).group(2)
         monster_from_api = get_monsters(monster_name=monster_in_message)
+
+        print(monster_in_message)
 
         if 'error' in monster_from_api:
             await message.author.send('Oh, uh, sorry boss... I actually don\'t know that one!')
