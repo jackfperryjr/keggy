@@ -58,6 +58,11 @@ def get_monsters(monster_name=None,monster_cr=None):
         r = requests.get(f'https://www.dnd5eapi.co/api/monsters/{m}')
         return r.json()
 
+def get_magic_item(item):
+    i = item.strip().replace(' ', '-').lower()
+    r = requests.get(f'https://www.dnd5eapi.co/api/magic-items/{i}')
+    return r.json()
+
 def get_stat_mod(stat_value):
     match stat_value:
         case stat_value if stat_value == 1:
@@ -117,6 +122,24 @@ async def on_message(message):
     # Blocks the bot from responding to itself
     if message.author == bot.user:
         return
+
+    if (bot.user.mentioned_in(message) or isinstance(message.channel, discord.DMChannel)) and 'tell me about' in message.content.lower() and 'item' in message.content.lower():
+        await message.channel.send('Sure, boss! Coming right up!')
+        item_in_message = re.search(r'tell me about(\s|a|the)(.*?)item(s?)', message.content).group(2)
+        item_in_message = item_in_message.lstrip('a ').lstrip('the ')
+        item_from_api = get_magic_item(item=item_in_message)
+
+        if 'error' in item_from_api:
+            await message.channel.send('Oh, uh, sorry boss... I actually don\'t know that one!')
+            return
+
+        embed = discord.Embed(color = 0x303136, title=item_in_message.upper())
+        embed.add_field(name='', value="---", inline=False)
+        for obj in item_from_api['desc']:
+            value = obj
+            embed.add_field(name='', value=f'{value}', inline=False)
+        
+        await message.channel.send(embed = embed)
 
     if bot.user.mentioned_in(message) and 'tell me about' in message.content.lower() and 'monster' in message.content.lower():
         await message.channel.send('Sure, boss! I\'ll send you a private message with details.')
