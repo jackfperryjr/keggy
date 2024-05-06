@@ -232,6 +232,6 @@ async def celebrate(ctx):
     await ctx.send(response)
 
 try:
-    bot.run(os.getenv('DISCORD_TOKEN_DEV'))
+    bot.run(os.getenv('DISCORD_TOKEN'))
 except Exception as e:
     print(f"An error occurred: {e}")
