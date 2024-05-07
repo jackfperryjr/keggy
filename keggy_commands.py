@@ -2,24 +2,26 @@ import discord
 from discord.ext import commands
 
 from keggy_api import KeggyApi
-from dnd_utils import DndUtils
+from kegerator import Kegerator
+from utils import Utils
 
 api = KeggyApi()
-utils = DndUtils()
+keggy_store = Kegerator()
+utils = Utils()
 
 class KeggyHelp(commands.Cog):
     def __init__(self, bot):
         self.bot = bot
 
-    @command.command()
-    async def help(self, bot, ctx, args=None):
+    @commands.command(name='help')
+    async def help(self, ctx, args=None):
         help_embed = discord.Embed(color = 0x303136, title='Hi, I\'m Keggy! Did you want a beer?')
-        command_list = [c.name for c in bot.commands]
+        command_list = [c.name for c in self.bot.commands]
 
         if not args:
             help_embed.add_field(
                 name="Available commands:",
-                value="\n".join([c.name for i, c in enumerate(bot.commands)]),
+                value="\n".join([c.name for i, c in enumerate(self.bot.commands)]),
                 inline=False
             )
             help_embed.add_field(
@@ -31,7 +33,7 @@ class KeggyHelp(commands.Cog):
         elif args in command_list:
             help_embed.add_field(
                 name=args,
-                value=bot.get_command(args).brief
+                value=self.bot.get_command(args).brief
             )
 
         else:
@@ -47,7 +49,7 @@ class KeggyFun(commands.Cog):
         self.bot = bot
 
     @commands.command(name='drink', brief='Keggy will make you a cocktail! (Or at least find you a cocktail recipe.)')
-    async def get_drink():
+    async def drink(self, ctx):
         drink = api.get_drink()
         embed = discord.Embed(color=0x303136, title="Here's a drink for you!")
         for item in drink:
@@ -92,12 +94,12 @@ class DungeonsAndDragons(commands.Cog):
         embed.add_field(name='', value="---", inline=False)
         embed.add_field(name='', value=f'The **{monster_name}** is a *{monster_from_api["size"].lower()}* CR *{monster_from_api["challenge_rating"]}* *{monster_from_api["type"]}* type with *{monster_from_api["hit_points"]}* hit points. It can take the following actions and has the below stats:', inline=False)
         embed.add_field(name='STATS', value="", inline=False)
-        embed.add_field(name='', value=f'STR: {util.get_stat_mod(monster_from_api["strength"])}', inline=True)
-        embed.add_field(name='', value=f'DEX: {util.get_stat_mod(monster_from_api["dexterity"])}', inline=True)
-        embed.add_field(name='', value=f'CON: {util.get_stat_mod(monster_from_api["constitution"])}', inline=True)
-        embed.add_field(name='', value=f'INT: {util.get_stat_mod(monster_from_api["intelligence"])}', inline=True)
-        embed.add_field(name='', value=f'WIS: {util.get_stat_mod(monster_from_api["wisdom"])}', inline=True)
-        embed.add_field(name='', value=f'CHA: {util.get_stat_mod(monster_from_api["charisma"])}', inline=True)
+        embed.add_field(name='', value=f'STR: {utils.get_stat_mod(monster_from_api["strength"])}', inline=True)
+        embed.add_field(name='', value=f'DEX: {utils.get_stat_mod(monster_from_api["dexterity"])}', inline=True)
+        embed.add_field(name='', value=f'CON: {utils.get_stat_mod(monster_from_api["constitution"])}', inline=True)
+        embed.add_field(name='', value=f'INT: {utils.get_stat_mod(monster_from_api["intelligence"])}', inline=True)
+        embed.add_field(name='', value=f'WIS: {utils.get_stat_mod(monster_from_api["wisdom"])}', inline=True)
+        embed.add_field(name='', value=f'CHA: {utils.get_stat_mod(monster_from_api["charisma"])}', inline=True)
 
         embed.add_field(name='SPEED', value="", inline=False)
         for obj in monster_from_api['speed']:
@@ -128,8 +130,8 @@ class DungeonsAndDragons(commands.Cog):
 
         await ctx.send(embed = embed)
 
-    @command.command(name='convert', brief='Keggy can convert coin denominations to coppers (cp) using this format: 12pp34gp56sp78cp.')
-    async def convert(ctx, arg):
+    @commands.command(name='convert', brief='Keggy can convert coin denominations to coppers (cp) using this format: 12pp34gp56sp78cp.')
+    async def convert(self, ctx, arg):
         if (keggy_store.check_fritz()):
             response = responses.get_random_fritz_message()
             await ctx.send(response)
@@ -139,8 +141,11 @@ class DungeonsAndDragons(commands.Cog):
         response = f'That\'s {copper} copper pieces!'
         await ctx.send(response)
 
-    @command.command(name='split_shares', brief='Keggy can split up the coin shares after using `/convert`.')
-    async def split_shares(ctx, arg):
+    @commands.command(name='split', brief='Keggy can split up copper pieces shares. You can use `/convert` to conver a variety of pieces into copper pieces.')
+    async def split(self, ctx, arg=None):
+        if arg == None:
+            await ctx.send('You have to tell me how many copper pieces to split!')
+
         if (keggy_store.check_fritz()):
             response = responses.get_random_fritz_message()
             await ctx.send(response)

@@ -49,6 +49,5 @@ class KeggyApi:
 
     def get_magic_item(self, item):
         i = item.strip().replace(' ', '-').lower()
-        print(i)
         r = requests.get(f'{self.magic_item_endpoint}/{i}')
         return r.json()

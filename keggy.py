@@ -17,6 +17,20 @@ load_dotenv()
 intents = discord.Intents.all()
 bot = commands.Bot(command_prefix='/', intents=intents, help_command=None)
 
+async def is_message_blocked(message):
+    # Blocks the bot from responding to itself
+    if message.author == bot.user:
+        return True
+
+    # Blocks on Fritz
+    if bot.user.mentioned_in(message) and keggy_store.check_fritz():
+        keggy_store.resetFrtiz()
+        await message.add_reaction("❌")
+        await message.channel.send(responses.get_random_fritz_message())
+        return True
+
+    return False
+
 @bot.event
 async def on_ready():
     print(f'{bot.user.name} has connected to Discord!')
@@ -43,14 +57,13 @@ async def on_message(message):
     await bot.process_commands(message)
     # Blocks the bot from responding to itself
 
-    if await utils.is_message_blocked(message):
+    if await is_message_blocked(message):
         return
 
     if 'beer' in message.content.lower():
         await message.add_reaction(responses.get_beer_emoji())
-        await message.channel.send(responses.get_random_positive_message())
 
 try:
-    bot.run(os.getenv('DISCORD_TOKEN_DEV'))
+    bot.run(os.getenv('DISCORD_TOKEN'))
 except Exception as e:
     print(f"An error occurred: {e}")
