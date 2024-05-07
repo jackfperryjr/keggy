@@ -27,8 +27,8 @@ class Utils:
         return total_copper
 
     def split_copper(self, copper, shares):
-        split = copper // shares
-        remainder = copper % shares
+        split = int(copper) // int(shares)
+        remainder = int(copper) % int(shares)
         return split, remainder
 
     def convert_to_currency(self, copper):

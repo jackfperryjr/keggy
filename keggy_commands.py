@@ -1,3 +1,4 @@
+import numbers
 import discord
 from discord.ext import commands
 
@@ -65,8 +66,13 @@ class DungeonsAndDragons(commands.Cog):
         self.bot = bot
 
     @commands.command(name='item', brief='Keggy will look inside himself and try to deliever information about the item you requested.')
-    async def item(self, ctx, *, item):
+    async def item(self, ctx, *, item=None):
         await ctx.send('Sure, boss! Coming right up!')
+
+        if item == None:
+            await ctx.send('What item were you looking for?')
+            return
+
         item_from_api = api.get_magic_item(item=item)
 
         if 'error' in item_from_api:
@@ -82,8 +88,13 @@ class DungeonsAndDragons(commands.Cog):
         await ctx.send(embed = embed)
 
     @commands.command(name='monster', brief='Keggy will look inside himself and try to deliver information about the monster you requested.')
-    async def monster(self, ctx, *, monster_name):
-        await ctx.send('Sure, boss! I\'ll send you a private message with details.')
+    async def monster(self, ctx, *, monster_name=None):
+        await ctx.send('Sure, boss! Coming right up!')
+
+        if monster_name == None:
+            await ctx.send('What monster were you looking for?')
+            return
+
         monster_from_api = api.get_monsters(monster_name=monster_name)
 
         if 'error' in monster_from_api:
@@ -131,32 +142,60 @@ class DungeonsAndDragons(commands.Cog):
         await ctx.send(embed = embed)
 
     @commands.command(name='convert', brief='Keggy can convert coin denominations to coppers (cp) using this format: 12pp34gp56sp78cp.')
-    async def convert(self, ctx, arg):
+    async def convert(self, ctx, string_currency=None):
         if (keggy_store.check_fritz()):
             response = responses.get_random_fritz_message()
             await ctx.send(response)
             return
+        
+        if string_currency == None:
+            await ctx.send('Convert what?')
+            return
 
-        copper = utils.convert_to_copper(arg)
+        copper = utils.convert_to_copper(string_currency)
         response = f'That\'s {copper} copper pieces!'
         await ctx.send(response)
 
-    @commands.command(name='split', brief='Keggy can split up copper pieces shares. You can use `/convert` to conver a variety of pieces into copper pieces.')
-    async def split(self, ctx, arg=None):
-        if arg == None:
-            await ctx.send('You have to tell me how many copper pieces to split!')
+    @commands.command(name='split', brief='Keggy can split up copper piece shares for each party member (default = 3). You can use `/convert` to convert a variety of pieces into copper pieces.')
+    async def split(self, ctx, copper_pieces=None, party_quantity=None):
+        default_party_quantity = 3
+        print(copper_pieces)
+        print(party_quantity)
 
         if (keggy_store.check_fritz()):
             response = responses.get_random_fritz_message()
             await ctx.send(response)
             return
 
-        copper = utils.convert_to_copper(arg)
-        split, remainder = utils.split_copper(copper, 3)
-        split_currency = utils.convert_to_currency(split)
-        remainder_currency = utils.convert_to_currency(remainder)
+        if copper_pieces == None:
+            await ctx.send('I can\'t count! You have to tell me how many copper pieces to split!')
+            return
 
-        response = f'Each person gets {split_currency["pp"]}pp {split_currency["gp"]}gp {split_currency["ep"]}ep {split_currency["sp"]}sp {split_currency["cp"]}cp. There are {remainder_currency["pp"]}pp {remainder_currency["gp"]}gp {remainder_currency["ep"]}ep {remainder_currency["sp"]}sp {remainder_currency["cp"]}cp left over.'
+        if party_quantity == None:
+            party_quantity = default_party_quantity
+            await ctx.send('I don\'t know how many of you there are! I\'ll just guess (using default of 3)!')
+
+        if not copper_pieces.isnumeric():
+            await ctx.send(f'**{copper_pieces}** is gibberish! Try `/convert` first.')
+            return
+
+        if not party_quantity.isnumeric():
+            await ctx.send(f'You have **{party_quantity}** in your party? Is that a real number?')
+            return
+
+        copper = utils.convert_to_copper(copper_pieces)
+        split, remainder = utils.split_copper(copper, party_quantity)
+        split_currency = utils.convert_to_currency(split)
+        split_currency_filtered = {k: v for k, v in split_currency.items() if v != 0}
+        split_currency_string = ', '.join(['{}{}'.format(v,k) for k,v in split_currency_filtered.items()])
+
+        remainder_currency = utils.convert_to_currency(remainder)
+        remainder_currency_filtered = {k: v for k, v in remainder_currency.items() if v != 0}
+        remainder_currency_string = ', '.join(['{}{}'.format(v,k) for k,v in remainder_currency_filtered.items()])
+        if len(remainder_currency_string) == 0:
+            remainder_currency_string = '0'
+
+        response = f'All **{party_quantity}** of you gets **{split_currency_string}**. There was a remainder of **{remainder_currency_string}** for me?'
         await ctx.send(response)
 
 async def setup(bot):
