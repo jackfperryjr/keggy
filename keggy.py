@@ -18,86 +18,6 @@ load_dotenv()
 intents = discord.Intents.all()
 bot = commands.Bot(command_prefix='/', intents=intents, help_command=None)
 
-def get_drink():
-    r = requests.get('https://www.thecocktaildb.com/api/json/v1/1/random.php')
-    drink = r.json()['drinks'][0]
-
-    ingredients = []
-    for key in drink:
-        if 'strIngredient' in key and drink[key] != None:
-            strMeasure = key.replace('Ingredient', 'Measure')
-            if drink[strMeasure] != None:
-                ingredients.append(drink[strMeasure] + drink[key])
-            else:
-                ingredients.append(drink[key])
-    
-    return {
-        'name': drink['strDrink'],
-        'ingredients': ', '.join(ingredients[:-1]) + ' and ' + ingredients[-1],
-        'instructions': drink['strInstructions'],
-        'image': drink['strDrinkThumb']
-    }
-
-def get_races(race=None):
-    if race == None:
-        r = requests.get(f'https://www.dnd5eapi.co/api/races')
-        return r.json()
-    if race != None:
-        r = requests.get(f'https://www.dnd5eapi.co/api/races/{race}')
-        return r.json()
-
-def get_monsters(monster_name=None,monster_cr=None):
-    if monster_name == None and monster_cr == None:
-        r = requests.get(f'https://www.dnd5eapi.co/api/monsters')
-        return r.json()
-    if monster_name == None and monster_cr != None:
-        r = requests.get(f'https://www.dnd5eapi.co/api/monsters?challenge_rating={monster_cr}')
-        return r.json()
-    if monster_name != None and monster_cr == None:
-        m = monster_name.strip().replace(' ', '-').lower()
-        r = requests.get(f'https://www.dnd5eapi.co/api/monsters/{m}')
-        return r.json()
-
-def get_magic_item(item):
-    i = item.strip().replace(' ', '-').lower()
-    r = requests.get(f'https://www.dnd5eapi.co/api/magic-items/{i}')
-    return r.json()
-
-def get_stat_mod(stat_value):
-    match stat_value:
-        case stat_value if stat_value == 1:
-            return f'{stat_value} (-5)'
-        case stat_value if stat_value in range(2, 4):
-            return f'{stat_value} (-4)'
-        case stat_value if stat_value in range(4, 6):
-            return f'{stat_value} (-3)'
-        case stat_value if stat_value in range(6, 8):
-            return f'{stat_value} (-2)' 
-        case stat_value if stat_value in range(8, 10):
-            return f'{stat_value} (-1)' 
-        case stat_value if stat_value in range(10, 12):
-            return f'{stat_value} (+0)' 
-        case stat_value if stat_value in range(12, 14):
-            return f'{stat_value} (+1)' 
-        case stat_value if stat_value in range(14, 16):
-            return f'{stat_value} (+2)' 
-        case stat_value if stat_value in range(16, 18):
-            return f'{stat_value} (+3)' 
-        case stat_value if stat_value in range(18, 20):
-            return f'{stat_value} (+4)' 
-        case stat_value if stat_value in range(20, 22):
-            return f'{stat_value} (+5)' 
-        case stat_value if stat_value in range(22, 24):
-            return f'{stat_value} (+6)' 
-        case stat_value if stat_value in range(24, 26):
-            return f'{stat_value} (+7)' 
-        case stat_value if stat_value in range(26, 28):
-            return f'{stat_value} (+8)' 
-        case stat_value if stat_value in range(28, 30):
-            return f'{stat_value} (+9)' 
-        case stat_value if stat_value == 30:
-            return f'{stat_value} (+10)' 
-
 @bot.event
 async def on_ready():
     print(f'{bot.user.name} has connected to Discord!')
@@ -108,6 +28,9 @@ async def on_ready():
 
     members = '\n - '.join([member.name for member in guild.members])
     print(f'Guild Members:\n - {members}')
+
+    await bot.load_extension('keggy_commands')
+    print('Keggy comands loaded!')
 
 @bot.event
 async def on_member_join(member):
@@ -122,74 +45,6 @@ async def on_message(message):
     # Blocks the bot from responding to itself
     if message.author == bot.user:
         return
-
-    if (bot.user.mentioned_in(message) or isinstance(message.channel, discord.DMChannel)) and 'tell me about' in message.content.lower() and 'item' in message.content.lower():
-        await message.channel.send('Sure, boss! Coming right up!')
-        item_in_message = re.search(r'tell me about(\s|a|the)(.*?)item(s?)', message.content).group(2)
-        item_in_message = item_in_message.lstrip('a ').lstrip('the ')
-        item_from_api = get_magic_item(item=item_in_message)
-
-        if 'error' in item_from_api:
-            await message.channel.send('Oh, uh, sorry boss... I actually don\'t know that one!')
-            return
-
-        embed = discord.Embed(color = 0x303136, title=item_in_message.upper())
-        embed.add_field(name='', value="---", inline=False)
-        for obj in item_from_api['desc']:
-            value = obj
-            embed.add_field(name='', value=f'{value}', inline=False)
-        
-        await message.channel.send(embed = embed)
-
-    if bot.user.mentioned_in(message) and 'tell me about' in message.content.lower() and 'monster' in message.content.lower():
-        await message.channel.send('Sure, boss! I\'ll send you a private message with details.')
-        monster_in_message = re.search(r'tell me about(\s|a|the)(.*?)monster(s?)', message.content).group(2)
-        monster_in_message = monster_in_message.lstrip('a ').lstrip('the ')
-        monster_from_api = get_monsters(monster_name=monster_in_message)
-
-        if 'error' in monster_from_api:
-            await message.author.send('Oh, uh, sorry boss... I actually don\'t know that one!')
-            return
-
-        embed = discord.Embed(color = 0x303136, title=monster_in_message.upper())
-        embed.add_field(name='', value="---", inline=False)
-        embed.add_field(name='', value=f'The **{monster_in_message}** is a *{monster_from_api["size"].lower()}* CR *{monster_from_api["challenge_rating"]}* *{monster_from_api["type"]}* type with *{monster_from_api["hit_points"]}* hit points. It can take the following actions and has the below stats:', inline=False)
-        embed.add_field(name='STATS', value="", inline=False)
-        embed.add_field(name='', value=f'STR: {get_stat_mod(monster_from_api["strength"])}', inline=True)
-        embed.add_field(name='', value=f'DEX: {get_stat_mod(monster_from_api["dexterity"])}', inline=True)
-        embed.add_field(name='', value=f'CON: {get_stat_mod(monster_from_api["constitution"])}', inline=True)
-        embed.add_field(name='', value=f'INT: {get_stat_mod(monster_from_api["intelligence"])}', inline=True)
-        embed.add_field(name='', value=f'WIS: {get_stat_mod(monster_from_api["wisdom"])}', inline=True)
-        embed.add_field(name='', value=f'CHA: {get_stat_mod(monster_from_api["charisma"])}', inline=True)
-
-        embed.add_field(name='SPEED', value="", inline=False)
-        for obj in monster_from_api['speed']:
-            key = obj
-            value = monster_from_api['speed'][obj]
-            embed.add_field(name="", value=f'{value} {key}', inline=True)
-
-        embed.add_field(name='AC', value="", inline=False)
-        for obj in monster_from_api['armor_class']:
-                armor_type = obj['type']
-                value = obj['value']
-                embed.add_field(name="", value=f'{value}, {armor_type}', inline=True)
-
-        embed.add_field(name='ACTIONS', value="", inline=False)
-        for obj in monster_from_api['actions']:
-            name = obj['name']
-            desc = obj['desc']
-            if name == 'Multiattack':
-                embed.add_field(name="", value=f'**{name}**: {desc}', inline=False)
-                continue
-            embed.add_field(name="", value=f'**{name}**: {desc}', inline=False)
-
-        embed.add_field(name='SPECIAL', value="", inline=False)
-        for obj in monster_from_api['special_abilities']:
-            key = obj['name']
-            value = obj['desc']
-            embed.add_field(name="", value=f'**{key}**: {value}', inline=False)
-
-        await message.author.send(embed = embed)
     
     # Blocks on Fritz
     if keggy_store.checkFritz():
@@ -291,6 +146,6 @@ async def celebrate(ctx):
     await ctx.send(response)
 
 try:
-    bot.run(os.getenv('DISCORD_TOKEN'))
+    bot.run(os.getenv('DISCORD_TOKEN_DEV'))
 except Exception as e:
     print(f"An error occurred: {e}")
