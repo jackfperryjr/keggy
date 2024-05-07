@@ -7,6 +7,57 @@ from dnd_utils import DndUtils
 api = KeggyApi()
 utils = DndUtils()
 
+class KeggyHelp(commands.Cog):
+    def __init__(self, bot):
+        self.bot = bot
+
+    @command.command()
+    async def help(self, bot, ctx, args=None):
+        help_embed = discord.Embed(color = 0x303136, title='Hi, I\'m Keggy! Did you want a beer?')
+        command_list = [c.name for c in bot.commands]
+
+        if not args:
+            help_embed.add_field(
+                name="Available commands:",
+                value="\n".join([c.name for i, c in enumerate(bot.commands)]),
+                inline=False
+            )
+            help_embed.add_field(
+                name="",
+                value="Type `/help <command name>` for more details about each command.",
+                inline=False
+            )
+
+        elif args in command_list:
+            help_embed.add_field(
+                name=args,
+                value=bot.get_command(args).brief
+            )
+
+        else:
+            help_embed.add_field(
+                name="",
+                value="Sorry, boss! Is that a new kind of beer?"
+            )
+
+        await ctx.send(embed=help_embed)
+
+class KeggyFun(commands.Cog):
+    def __init__(self, bot):
+        self.bot = bot
+
+    @commands.command(name='drink', brief='Keggy will make you a cocktail! (Or at least find you a cocktail recipe.)')
+    async def get_drink():
+        drink = api.get_drink()
+        embed = discord.Embed(color=0x303136, title="Here's a drink for you!")
+        for item in drink:
+            if (item == 'image'):
+                continue
+            embed.add_field(name=item, value=drink[item], inline=False)
+        embed.set_image(url=drink['image'])
+
+        await ctx.send(embed = embed)
+
 class DungeonsAndDragons(commands.Cog):
     def __init__(self, bot):
         self.bot = bot
@@ -77,6 +128,34 @@ class DungeonsAndDragons(commands.Cog):
 
         await ctx.send(embed = embed)
 
+    @command.command(name='convert', brief='Keggy can convert coin denominations to coppers (cp) using this format: 12pp34gp56sp78cp.')
+    async def convert(ctx, arg):
+        if (keggy_store.check_fritz()):
+            response = responses.get_random_fritz_message()
+            await ctx.send(response)
+            return
+
+        copper = utils.convert_to_copper(arg)
+        response = f'That\'s {copper} copper pieces!'
+        await ctx.send(response)
+
+    @command.command(name='split_shares', brief='Keggy can split up the coin shares after using `/convert`.')
+    async def split_shares(ctx, arg):
+        if (keggy_store.check_fritz()):
+            response = responses.get_random_fritz_message()
+            await ctx.send(response)
+            return
+
+        copper = utils.convert_to_copper(arg)
+        split, remainder = utils.split_copper(copper, 3)
+        split_currency = utils.convert_to_currency(split)
+        remainder_currency = utils.convert_to_currency(remainder)
+
+        response = f'Each person gets {split_currency["pp"]}pp {split_currency["gp"]}gp {split_currency["ep"]}ep {split_currency["sp"]}sp {split_currency["cp"]}cp. There are {remainder_currency["pp"]}pp {remainder_currency["gp"]}gp {remainder_currency["ep"]}ep {remainder_currency["sp"]}sp {remainder_currency["cp"]}cp left over.'
+        await ctx.send(response)
+
 async def setup(bot):
+    await bot.add_cog(KeggyHelp(bot))
+    await bot.add_cog(KeggyFun(bot))
     await bot.add_cog(DungeonsAndDragons(bot))
     
