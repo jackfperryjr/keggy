@@ -76,7 +76,7 @@ async def is_message_blocked(message):
         return True
 
     # Blocks on Fritz
-    if bot.user.mentioned_in(message) and bot.keggy_store.checkFritz():
+    if bot.user.mentioned_in(message) and keggy_store.checkFritz():
         keggy_store.resetFrtiz()
         await message.add_reaction("❌")
         await message.channel.send(responses.getRandomFritzMessage())
