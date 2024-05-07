@@ -141,11 +141,20 @@ class DungeonsAndDragons(commands.Cog):
             value = obj['desc']
             embed.add_field(name="", value=f'**{key}**: {value}', inline=False)
 
-        embed.add_field(name='SENSES', value="", inline=False)
-        for obj in monster_from_api['senses']:
-            key = obj.replace('_', ' ').lower()
-            value = monster_from_api['senses'][obj]
-            embed.add_field(name="", value=f'{key} {value}', inline=True)
+        damage_vulnerabilities = ', '.join(monster_from_api['damage_vulnerabilities'])
+        embed.add_field(name="DMG VULNERABILITIES", value=f'{damage_vulnerabilities}', inline=True)
+
+        damage_resistances = ', '.join(monster_from_api['damage_resistances'])
+        embed.add_field(name="DMG RESISTANCES", value=f'{damage_resistances}', inline=True)
+
+        damage_immunities = ', '.join(monster_from_api['damage_immunities'])
+        embed.add_field(name="DMG IMMUNITIES", value=f'{damage_immunities}', inline=True)
+
+        condition_immunities = ', '.join([i['name'] for i in monster_from_api['condition_immunities']])
+        embed.add_field(name="CONTITON IMMUNITIES", value=f'{condition_immunities}', inline=True)
+
+        senses = ', '.join(['{} {}'.format(k.replace('_', ' '), v) for k,v in monster_from_api['senses'].items()])
+        embed.add_field(name='SENSES', value=f'{senses}', inline=True)
 
         await ctx.send(embed = embed)
 
