@@ -7,23 +7,23 @@ class Kegerator:
     }
 
   ### Fritz Mechanics
-  def addFritz(self):
-    self.updateStore("fritz", self.getStoreValue("fritz") + 1)
-    print("Fritz chance at", self.getStoreValue("fritz"), "percent.")
+  def add_fritz(self):
+    self.update_store("fritz", self.get_store_value("fritz") + 1)
+    print("Fritz chance at", self.get_store_value("fritz"), "percent.")
 
-  def checkFritz(self):
-    self.addFritz()
-    return self.getStoreValue("fritz") >= random.randint(1, 100)
+  def check_fritz(self):
+    self.add_fritz()
+    return self.get_store_value("fritz") >= random.randint(1, 100)
 
-  def resetFrtiz(self):
-    self.updateStore("fritz", 0)
+  def reset_frtiz(self):
+    self.update_store("fritz", 0)
 
   ### Generic Operations: Read, Write, Update
-  def updateStore(self, key, value):
+  def update_store(self, key, value):
     self.store[key] = value
 
-  def getStore(self):
+  def get_store(self):
     return self.store
   
-  def getStoreValue(self, key):
+  def get_store_value(self, key):
     return self.store[key]
