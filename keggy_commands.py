@@ -122,9 +122,9 @@ class DungeonsAndDragons(commands.Cog):
 
         embed.add_field(name='AC', value="", inline=False)
         for obj in monster_from_api['armor_class']:
-                armor_type = obj['type']
-                value = obj['value']
-                embed.add_field(name="", value=f'{value}, {armor_type}', inline=True)
+            armor_type = obj['type']
+            value = obj['value']
+            embed.add_field(name="", value=f'{value}, {armor_type}', inline=True)
 
         embed.add_field(name='ACTIONS', value="", inline=False)
         for obj in monster_from_api['actions']:
@@ -140,6 +140,12 @@ class DungeonsAndDragons(commands.Cog):
             key = obj['name']
             value = obj['desc']
             embed.add_field(name="", value=f'**{key}**: {value}', inline=False)
+
+        embed.add_field(name='SENSES', value="", inline=False)
+        for obj in monster_from_api['senses']:
+            key = obj.replace('_', ' ').lower()
+            value = monster_from_api['senses'][obj]
+            embed.add_field(name="", value=f'{key} {value}', inline=True)
 
         await ctx.send(embed = embed)
 
