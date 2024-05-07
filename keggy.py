@@ -64,6 +64,6 @@ async def on_message(message):
         await message.add_reaction(responses.get_beer_emoji())
 
 try:
-    bot.run(os.getenv('DISCORD_TOKEN_DEV'))
+    bot.run(os.getenv('DISCORD_TOKEN'))
 except Exception as e:
     print(f"An error occurred: {e}")
