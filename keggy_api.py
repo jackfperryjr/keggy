@@ -3,7 +3,7 @@ import requests
 class KeggyApi:
     def __init__(self):
         self.drink_endpoint = 'https://www.thecocktaildb.com/api/json/v1/1/random.php'
-        self.monster_endpoint = 'https://www.dnd5eapi.co/api/monsters'
+        self.monster_endpoint = 'https://api.open5e.com/v1/monsters'
         self.magic_item_endpoint = 'https://www.dnd5eapi.co/api/magic-items'
         self.race_endpoint = 'https://www.dnd5eapi.co/api/races'
   
