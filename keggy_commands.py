@@ -4,11 +4,13 @@ from discord.ext import commands
 
 from keggy_api import KeggyApi
 from kegerator import Kegerator
+from responses import Responses
 from utils import Utils
 
 api = KeggyApi()
 keggy_store = Kegerator()
 utils = Utils()
+response = Responses()
 
 class KeggyHelp(commands.Cog):
     def __init__(self, bot):
@@ -144,7 +146,7 @@ class DungeonsAndDragons(commands.Cog):
     @commands.command(name='convert', brief='Keggy can convert coin denominations to coppers (cp) using this format: 12pp34gp56sp78cp.')
     async def convert(self, ctx, string_currency=None):
         if (keggy_store.check_fritz()):
-            response = responses.get_random_fritz_message()
+            response = response.get_random_fritz_message()
             await ctx.send(response)
             return
         
@@ -159,11 +161,9 @@ class DungeonsAndDragons(commands.Cog):
     @commands.command(name='split', brief='Keggy can split up copper piece shares for each party member (default = 3). You can use `/convert` to convert a variety of pieces into copper pieces.')
     async def split(self, ctx, copper_pieces=None, party_quantity=None):
         default_party_quantity = 3
-        print(copper_pieces)
-        print(party_quantity)
 
         if (keggy_store.check_fritz()):
-            response = responses.get_random_fritz_message()
+            response = response.get_random_fritz_message()
             await ctx.send(response)
             return
 
@@ -175,11 +175,11 @@ class DungeonsAndDragons(commands.Cog):
             party_quantity = default_party_quantity
             await ctx.send('I don\'t know how many of you there are! I\'ll just guess (using default of 3)!')
 
-        if not copper_pieces.isnumeric():
+        if not str(copper_pieces).isnumeric():
             await ctx.send(f'**{copper_pieces}** is gibberish! Try `/convert` first.')
             return
 
-        if not party_quantity.isnumeric():
+        if not str(party_quantity).isnumeric():
             await ctx.send(f'You have **{party_quantity}** in your party? Is that a real number?')
             return
 
