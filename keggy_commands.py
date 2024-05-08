@@ -78,12 +78,19 @@ class DungeonsAndDragons(commands.Cog):
         race_from_api = api.get_race(race=race)
 
         if 'error' in race_from_api:
-            await ctx.send('Oh, uh, sorry boss... I actually don\'t know that one!')
-            return
+            race_from_api = api.get_subrace(subrace=race)
+            if 'error' in race_from_api:
+                await ctx.send('Oh, uh, sorry boss... I actually don\'t know that one!')
+                return
 
         embed = discord.Embed(color = 0x303136, title=race.upper())
         embed.add_field(name='', value="---", inline=False)
-        embed.add_field(name='', value=f'{race_from_api["size_description"]} {race_from_api["language_desc"]} {race_from_api["age"].replace(".", ",")} {race_from_api["alignment"].replace("Humans", "and")}', inline=False)
+
+        if 'subraces' in race_from_api:
+            embed.add_field(name='', value=f'{race_from_api["size_description"]} {race_from_api["language_desc"]} {race_from_api["age"].replace(".", ",")} {race_from_api["alignment"].replace("Humans", "and")}', inline=False)
+        else:
+            embed.add_field(name='', value=f'In addition to the attributes of the base race of {race_from_api["race"]["name"]}, you have the following:', inline=False)
+            embed.add_field(name='', value=f'{race_from_api["desc"]}', inline=False)
 
         embed.add_field(name='*ABILITY BONUSES*', value="", inline=False)
         for obj in race_from_api['ability_bonuses']:
@@ -91,13 +98,22 @@ class DungeonsAndDragons(commands.Cog):
             name = obj['ability_score']['name']
             embed.add_field(name="", value=f'**{name}**: +{bonus}', inline=True)
 
-        if len(race_from_api['traits']) > 0:
-            traits = ', '.join([t['name'] for t in race_from_api['traits']])
-            embed.add_field(name='*TRAITS*', value=f'{traits.lower()}', inline=False)
+        if len(race_from_api['starting_proficiencies']) > 0:
+            proficiencies = ', '.join([s['name'] for s in race_from_api['starting_proficiencies']])
+            embed.add_field(name='*PROFICIENCIES*', value=f'{proficiencies.lower()}', inline=False)
 
-        if len(race_from_api['subraces']) > 0:
-            subraces = ', '.join([s['name'] for s in race_from_api['subraces']])
-            embed.add_field(name='*SUBRACES*', value=f'{subraces.lower()}', inline=False)
+        if 'subraces' in race_from_api:
+            if len(race_from_api['traits']) > 0:
+                traits = ', '.join([t['name'] for t in race_from_api['traits']])
+                embed.add_field(name='*TRAITS*', value=f'{traits.lower()}', inline=False)
+
+            if len(race_from_api['subraces']) > 0:
+                subraces = ', '.join([s['name'] for s in race_from_api['subraces']])
+                embed.add_field(name='*SUBRACES*', value=f'{subraces.lower()}', inline=False)
+        else:
+            if len(race_from_api['racial_traits']) > 0:
+                racial_traits = ', '.join([t['name'] for t in race_from_api['racial_traits']])
+                embed.add_field(name='*TRAITS*', value=f'{racial_traits.lower()}', inline=False)
         
         await ctx.send(embed = embed)
 

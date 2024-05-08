@@ -6,6 +6,7 @@ class KeggyApi:
         self.monster_endpoint = 'https://api.open5e.com/v1/monsters'
         self.magic_item_endpoint = 'https://www.dnd5eapi.co/api/magic-items'
         self.race_endpoint = 'https://www.dnd5eapi.co/api/races'
+        self.subrace_endpoint = 'https://www.dnd5eapi.co/api/subraces'
   
     def get_drink(self):
         r = requests.get(self.drink_endpoint)
@@ -33,6 +34,15 @@ class KeggyApi:
             return r.json()
         if race != None:
             r = requests.get(f'{self.race_endpoint}/{race}')
+            return r.json()
+
+    def get_subrace(self, subrace=None):
+        subrace = subrace.replace(' ', '-')
+        if subrace == None:
+            r = requests.get(self.subrace_endpoint)
+            return r.json()
+        if subrace != None:
+            r = requests.get(f'{self.subrace_endpoint}/{subrace}')
             return r.json()
 
     def get_monster(self, monster_name=None, monster_cr=None):
