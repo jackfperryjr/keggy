@@ -33,23 +33,13 @@ async def is_message_blocked(message):
 
 @bot.event
 async def on_ready():
-    print(f'{bot.user.name} has connected to Discord!')
-
-    for guild in bot.guilds:
-        if guild.name == os.getenv('DISCORD_GUILD'):
-            break
-
-    members = '\n - '.join([member.name for member in guild.members])
-    print(f'Guild Members:\n - {members}')
-
+    print(f'\n{bot.user.name} has connected to Discord!')
     await bot.load_extension('keggy_commands')
-    print('Keggy comands loaded!')
+    print('\nKeggy comands loaded!')
 
 @bot.event
 async def on_member_join(member):
-    await message.channel.send(
-        f'Hi {member.name}, welcome to {os.getenv("DISCORD_GUILD")}! Want a beer? 🍺'
-    )
+    await member.send(f'Hi {member.name}, welcome to {member.guild.name}! Want a drink? 🍺')
 
 @bot.event
 async def on_message(message):
