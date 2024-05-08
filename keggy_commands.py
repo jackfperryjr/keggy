@@ -72,7 +72,7 @@ class DungeonsAndDragons(commands.Cog):
         await ctx.send('Sure, boss! Coming right up!')
 
         if race == None:
-            await ctx.send('What item were you looking for?')
+            await ctx.send('Who were you looking for?')
             return
 
         race_from_api = api.get_race(race=race)
