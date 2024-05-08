@@ -39,7 +39,8 @@ async def on_ready():
 
 @bot.event
 async def on_member_join(member):
-    await member.send(f'Hi {member.name}, welcome to {member.guild.name}! Want a drink? 🍺')
+    channel = bot.get_channel(1236490390492676109)
+    await channel.send(f'Hi **{member.name}**, welcome to {member.guild.name}! Want a `/drink`? 🍺')
 
 @bot.event
 async def on_message(message):
