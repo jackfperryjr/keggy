@@ -27,15 +27,15 @@ class KeggyApi:
             'image': drink['strDrinkThumb']
         }
 
-    def get_races(self, race=None):
+    def get_race(self, race=None):
         if race == None:
-            r = requests.get(self.races_endpoint)
+            r = requests.get(self.race_endpoint)
             return r.json()
         if race != None:
-            r = requests.get(f'{self.races_endpoint}/{race}')
+            r = requests.get(f'{self.race_endpoint}/{race}')
             return r.json()
 
-    def get_monsters(self, monster_name=None, monster_cr=None):
+    def get_monster(self, monster_name=None, monster_cr=None):
         if monster_name == None and monster_cr == None:
             r = requests.get(self.monster_endpoint)
             return r.json()

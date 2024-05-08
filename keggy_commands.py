@@ -67,6 +67,40 @@ class DungeonsAndDragons(commands.Cog):
     def __init__(self, bot):
         self.bot = bot
 
+    @commands.command(name='race', brief='Keggy will look inside himself and try to deliever information about the race you requested.')
+    async def race(self, ctx, *, race=None):
+        await ctx.send('Sure, boss! Coming right up!')
+
+        if race == None:
+            await ctx.send('What item were you looking for?')
+            return
+
+        race_from_api = api.get_race(race=race)
+
+        if 'error' in race_from_api:
+            await ctx.send('Oh, uh, sorry boss... I actually don\'t know that one!')
+            return
+
+        embed = discord.Embed(color = 0x303136, title=race.upper())
+        embed.add_field(name='', value="---", inline=False)
+        embed.add_field(name='', value=f'{race_from_api["size_description"]} {race_from_api["language_desc"]} {race_from_api["age"].replace(".", ",")} {race_from_api["alignment"].replace("Humans", "and")}', inline=False)
+
+        embed.add_field(name='*ABILITY BONUSES*', value="", inline=False)
+        for obj in race_from_api['ability_bonuses']:
+            bonus = obj['bonus']
+            name = obj['ability_score']['name']
+            embed.add_field(name="", value=f'**{name}**: +{bonus}', inline=True)
+
+        if len(race_from_api['traits']) > 0:
+            traits = ', '.join([t['name'] for t in race_from_api['traits']])
+            embed.add_field(name='*TRAITS*', value=f'{traits.lower()}', inline=False)
+
+        if len(race_from_api['subraces']) > 0:
+            subraces = ', '.join([s['name'] for s in race_from_api['subraces']])
+            embed.add_field(name='*SUBRACES*', value=f'{subraces.lower()}', inline=False)
+        
+        await ctx.send(embed = embed)
+
     @commands.command(name='item', brief='Keggy will look inside himself and try to deliever information about the item you requested.')
     async def item(self, ctx, *, item=None):
         await ctx.send('Sure, boss! Coming right up!')
@@ -97,7 +131,7 @@ class DungeonsAndDragons(commands.Cog):
             await ctx.send('What monster were you looking for?')
             return
 
-        monster_from_api = api.get_monsters(monster_name=monster_name)
+        monster_from_api = api.get_monster(monster_name=monster_name)
 
         if 'error' in monster_from_api:
             await ctx.send('Oh, uh, sorry boss... I actually don\'t know that one!')
@@ -110,7 +144,7 @@ class DungeonsAndDragons(commands.Cog):
         embed = discord.Embed(color=0x303136, title=monster_name.upper())
         embed.add_field(name='', value="---", inline=False)
         embed.add_field(name='', value=f'The **{monster_name}** is a *{monster_from_api["size"].lower()}* CR *{monster_from_api["challenge_rating"]}* *{monster_from_api["type"]}* type with *{monster_from_api["hit_points"]}* hit points. It can take the following actions and has the below stats:', inline=False)
-        embed.add_field(name='*STATS*', value=f'**STR**: {utils.get_stat_mod(monster_from_api["strength"])}\u1CBC\u1CBC\u1CBC\u1CBC\u1CBC\u1CBC**DEX**: {utils.get_stat_mod(monster_from_api["dexterity"])}\u1CBC\u1CBC\u1CBC\u1CBC\u1CBC\u1CBC**CON**: {utils.get_stat_mod(monster_from_api["constitution"])}\n**INT**: {utils.get_stat_mod(monster_from_api["intelligence"])}\u1CBC\u1CBC\u1CBC\u1CBC\u1CBC\u1CBC\u1CBC\u1CBC**WIS**: {utils.get_stat_mod(monster_from_api["wisdom"])}\u1CBC\u1CBC\u1CBC\u1CBC\u1CBC\u1CBC**CHA**: {utils.get_stat_mod(monster_from_api["charisma"])}', inline=True)
+        embed.add_field(name='*ABILITY SCORES*', value=f'**STR**: {utils.get_stat_mod(monster_from_api["strength"])} **DEX**: {utils.get_stat_mod(monster_from_api["dexterity"])} **CON**: {utils.get_stat_mod(monster_from_api["constitution"])}\n**INT**: {utils.get_stat_mod(monster_from_api["intelligence"])} **WIS**: {utils.get_stat_mod(monster_from_api["wisdom"])} **CHA**: {utils.get_stat_mod(monster_from_api["charisma"])}', inline=True)
         embed.add_field(name="", value=f'**AC**: {monster_from_api['armor_class']}, {monster_from_api['armor_desc']}', inline=False)
 
         embed.add_field(name='*SPEED*', value="", inline=False)
