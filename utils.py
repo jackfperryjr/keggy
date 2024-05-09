@@ -39,41 +39,36 @@ class Utils:
             copper %= value
         return currency
 
-    def embed_subrace(self, subrace):
-        embed = discord.Embed(color = 0x303136, title=subrace['name'].upper())
-        embed.add_field(name='', value="---", inline=False)
-        embed.add_field(name='', value=f'{subrace["desc"]}', inline=False)
-        embed.add_field(name='*ABILITY BONUSES*', value="", inline=False)
-        for obj in subrace['ability_bonuses']:
-            bonus = obj['bonus']
-            name = obj['ability_score']['name']
-            embed.add_field(name="", value=f'**{name}**: +{bonus}', inline=True)
-        if len(subrace['starting_proficiencies']) > 0:
-            proficiencies = ', '.join([s['name'] for s in subrace['starting_proficiencies']])
-            embed.add_field(name='*PROFICIENCIES*', value=f'{proficiencies.lower()}', inline=False)
-        if len(subrace['racial_traits']) > 0:
-            racial_traits = ', '.join([t['name'] for t in subrace['racial_traits']])
-            embed.add_field(name='*TRAITS*', value=f'{racial_traits.lower()}', inline=False)
-        
-        return embed
-
     def embed_race(self, race):
         embed = discord.Embed(color = 0x303136, title=race['name'].upper())
         embed.add_field(name='', value="---", inline=False)
-        embed.add_field(name='', value=f'{race["size_description"]} {race["language_desc"]} {race["age"].replace(".", ",")} {race["alignment"].replace("Humans", "and")}', inline=False)
+
+        if 'subraces' in race:
+            embed.add_field(name='', value=f'{race["size_description"]} {race["language_desc"]} {race["age"].replace(".", ",")} {race["alignment"].replace("Humans", "and")}', inline=False)
+        else:
+            embed.add_field(name='', value=f'{race["desc"]}', inline=False)
+
         embed.add_field(name='*ABILITY BONUSES*', value="", inline=False)
+
         for obj in race['ability_bonuses']:
             bonus = obj['bonus']
             name = obj['ability_score']['name']
             embed.add_field(name="", value=f'**{name}**: +{bonus}', inline=True)
+
         if len(race['starting_proficiencies']) > 0:
             proficiencies = ', '.join([s['name'] for s in race['starting_proficiencies']])
             embed.add_field(name='*PROFICIENCIES*', value=f'{proficiencies.lower()}', inline=False)
-        if len(race['traits']) > 0:
-            traits = ', '.join([t['name'] for t in race['traits']])
-            embed.add_field(name='*TRAITS*', value=f'{traits.lower()}', inline=False)
-        if len(race['subraces']) > 0:
-            subraces = ', '.join([s['name'] for s in race['subraces']])
-            embed.add_field(name='*SUBRACES*', value=f'{subraces.lower()}', inline=False)
-
+        
+        if 'subraces' in race:
+            if len(race['traits']) > 0:
+                traits = ', '.join([t['name'] for t in race['traits']])
+                embed.add_field(name='*TRAITS*', value=f'{traits.lower()}', inline=False)
+            if len(race['subraces']) > 0:
+                subraces = ', '.join([s['name'] for s in race['subraces']])
+                embed.add_field(name='*SUBRACES*', value=f'{subraces.lower()}', inline=False)
+        else:
+            if len(race['racial_traits']) > 0:
+                racial_traits = ', '.join([t['name'] for t in race['racial_traits']])
+                embed.add_field(name='*TRAITS*', value=f'{racial_traits.lower()}', inline=False)
+            
         return embed

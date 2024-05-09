@@ -96,7 +96,7 @@ class DungeonsAndDragons(commands.Cog):
             embed_race = utils.embed_race(race_from_api)
         else:
             embed_race = utils.embed_race(race_from_api)
-            embed_subrace = utils.embed_subrace(subrace_from_api)
+            embed_subrace = utils.embed_race(subrace_from_api)
 
         if embed_subrace == None:
             await ctx.send(embed=embed_race)
