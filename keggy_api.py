@@ -1,9 +1,10 @@
 import requests
+import json
 
 class KeggyApi:
     def __init__(self):
         self.drink_endpoint = 'https://www.thecocktaildb.com/api/json/v1/1/random.php'
-        self.monster_endpoint = 'https://api.open5e.com/v1/monsters'
+        self.monster_endpoint = 'https://www.dnd5eapi.co/api/monsters'
         self.magic_item_endpoint = 'https://www.dnd5eapi.co/api/magic-items'
         self.race_endpoint = 'https://www.dnd5eapi.co/api/races'
         self.subrace_endpoint = 'https://www.dnd5eapi.co/api/subraces'
@@ -55,7 +56,13 @@ class KeggyApi:
         if monster_name != None and monster_cr == None:
             m = monster_name.strip().replace(' ', '-').lower()
             r = requests.get(f'{self.monster_endpoint}/{m}')
-            return r.json()
+            if 'error' in r.json():
+                with open('keggy_api.json', 'rb') as f:
+                    monsters = json.load(f)['monsters']
+                    m = [monster for monster in monsters if monster_name.lower() in monster.get('name').lower()]
+                return m[0]
+            else:
+                return r.json()
 
     def get_magic_item(self, item):
         i = item.strip().replace(' ', '-').lower()

@@ -149,7 +149,7 @@ class DungeonsAndDragons(commands.Cog):
         embed.add_field(name='', value="---", inline=False)
         embed.add_field(name='', value=f'The **{monster_name}** is a *{monster_from_api["size"].lower()}* CR *{monster_from_api["challenge_rating"]}* *{monster_from_api["type"]}* type with *{monster_from_api["hit_points"]}* hit points. It can take the following actions and has the below stats:', inline=False)
         embed.add_field(name='*ABILITY SCORES*', value=f'**STR**: {utils.get_stat_mod(monster_from_api["strength"])} **DEX**: {utils.get_stat_mod(monster_from_api["dexterity"])} **CON**: {utils.get_stat_mod(monster_from_api["constitution"])}\n**INT**: {utils.get_stat_mod(monster_from_api["intelligence"])} **WIS**: {utils.get_stat_mod(monster_from_api["wisdom"])} **CHA**: {utils.get_stat_mod(monster_from_api["charisma"])}', inline=True)
-        embed.add_field(name="", value=f'**AC**: {monster_from_api['armor_class']}, {monster_from_api['armor_desc']}', inline=False)
+        embed.add_field(name="", value=f'**AC**: {monster_from_api['armor_class'][0]['value']}, {monster_from_api['armor_class'][0]['type']}', inline=False)
 
         embed.add_field(name='*SPEED*', value="", inline=False)
         for obj in monster_from_api['speed']:
@@ -172,23 +172,23 @@ class DungeonsAndDragons(commands.Cog):
             value = obj['desc']
             embed.add_field(name="", value=f'**{key}**: {value}', inline=False)
 
-        damage_vulnerabilities = monster_from_api['damage_vulnerabilities']
+        damage_vulnerabilities = ', '.join(monster_from_api['damage_vulnerabilities'])
         damage_vulnerabilities = 'N/a' if len(damage_vulnerabilities) == 0 else damage_vulnerabilities
         embed.add_field(name='*DMG VULNERABILITIES*', value=f'{damage_vulnerabilities}', inline=True)
 
-        damage_resistances = monster_from_api['damage_resistances']
+        damage_resistances = ', '.join(monster_from_api['damage_resistances'])
         damage_resistances = 'N/a' if len(damage_resistances) == 0 else damage_resistances
         embed.add_field(name='*DMG RESISTANCES*', value=f'{damage_resistances}', inline=True)
 
-        damage_immunities = monster_from_api['damage_immunities']
+        damage_immunities = ', '.join(monster_from_api['damage_immunities'])
         damage_immunities = 'N/a' if len(damage_immunities) == 0 else damage_immunities
         embed.add_field(name='*DMG IMMUNITIES*', value=f'{damage_immunities}', inline=True)
 
-        condition_immunities = monster_from_api['condition_immunities']
+        condition_immunities = ', '.join([x['name'] for x in monster_from_api['condition_immunities']])
         condition_immunities = 'N/a' if len(condition_immunities) == 0 else condition_immunities
         embed.add_field(name='*CONTITON IMMUNITIES*', value=f'{condition_immunities}', inline=True)
 
-        senses = monster_from_api['senses']
+        senses =  ', '.join(f'{key.replace("_", " ")} {val}' for key, val in monster_from_api['senses'].items())
         senses = 'N/a' if len(senses) == 0 else senses
         embed.add_field(name='*SENSES*', value=f'{senses.lower()}', inline=True)
 

@@ -1,0 +1,70 @@
+{
+    "monsters": [
+        {
+            "index": "quetzalcoatlus",
+	        "name": "Quetzalcoatlus",
+	        "size": "Huge",
+	        "type": "beast",
+	        "subtype": "dinosaur",
+	        "alignment": "unaligned",
+	        "armor_class": [
+                {
+                    "type": "natural",
+                    "value": 13
+                }
+	        ],
+	        "hit_points": 30,
+	        "hit_dice": "4d12+4",
+	        "hit_points_roll": "4d12",
+	        "speed": {
+	        	"fly": "30 ft.",
+                "walk": "10 ft."
+	        },
+	        "strength": 15,
+	        "dexterity": 13,
+	        "constitution": 13,
+	        "intelligence": 2,
+	        "wisdom": 10,
+	        "charisma": 5,
+	        "proficiencies": [],
+	        "damage_vulnerabilities": [],
+	        "damage_resistances": [],
+	        "damage_immunities": [],
+	        "condition_immunities": [],
+	        "senses": {
+	        	"passive_perception": 12
+	        },
+	        "languages": "",
+	        "challenge_rating": 2,
+	        "proficiency_bonus": 2,
+	        "xp": 450,
+	        "special_abilities": [
+	        	{
+	        		"name": "Flyby",
+	        		"desc": "The quetzalcoatlus doesn't provoke an opportunity attack when it flies out of an enemy's reach."
+	        	}
+	        ],
+	        "actions": [
+	        	{
+	        		"name": "Bite",
+	        		"desc": "Melee Weapon Attack: +4 to hit, reach 10 ft., one creature. Hit: 12 (3d6 + 2) piercing damage. If the quetzalcoatlus flew least 30 feet toward the target immediately before the hit, the target takes an extra 10 (3d6) piercing damage.",
+	        		"attack_bonus": 4,
+	        		"damage": [
+	        			{
+	        				"damage_type": {
+	        					"index": "piercing",
+	        					"name": "Piercing",
+	        					"url": "/api/damage-types/piercing"
+	        				},
+	        				"damage_dice": "3d6+2"
+	        			}
+	        		],
+	        		"actions": []
+	        	}
+	        ],
+	        "image": "https://www.aidedd.org/dnd/images/quetzalcoatlus.jpg",
+	        "url": "",
+	        "legendary_actions": []
+        }
+    ]
+}
