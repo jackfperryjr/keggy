@@ -35,7 +35,7 @@ async def is_message_blocked(message):
 async def on_ready():
     print(f'\n{bot.user.name} has connected to Discord!')
     await bot.load_extension('keggy_commands')
-    print('\nKeggy comands loaded!')
+    print('\nKeggy commands loaded!')
 
 @bot.event
 async def on_member_join(member):
@@ -46,8 +46,8 @@ async def on_member_join(member):
 async def on_message(message):
     # Process Bot Commands
     await bot.process_commands(message)
-    # Blocks the bot from responding to itself
 
+    # Blocks the bot from responding to itself and blocks on fritz
     if await is_message_blocked(message):
         return
 

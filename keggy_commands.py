@@ -53,6 +53,7 @@ class KeggyFun(commands.Cog):
 
     @commands.command(name='drink', brief='Keggy will make you a cocktail! (Or at least find you a cocktail recipe.)')
     async def drink(self, ctx):
+        keggy_store.update_last_command('drink', None)
         drink = api.get_drink()
         embed = discord.Embed(color=0x303136, title="Here's a drink for you!")
         for item in drink:
@@ -62,6 +63,36 @@ class KeggyFun(commands.Cog):
         embed.set_image(url=drink['image'])
 
         await ctx.send(embed = embed)
+
+class KeggyUtils(commands.Cog):
+    def __init__(self, bot):
+        self.bot = bot
+        self.command_names = {
+            'drink': None,
+            'help': 'help',
+            'item': 'item',
+            'monster': 'monster_name',
+            'convert': 'string_currency',
+            'split': ['copper_pieces', 'party_quantity']
+        }
+
+    @commands.command(name='rerun', brief='Keggy will rerun the last command issued.')
+    async def rerun(self, ctx):
+        if keggy_store.get_store_value('last_command') == '':
+            await ctx.send('I don\'t have a command to rerun!')
+            return
+        
+        command_to_rerun = self.bot.get_command(keggy_store.get_store_value('last_command'))
+
+        await ctx.send('Rerunning command...')
+        if keggy_store.get_store_value('last_command') == 'split':
+            copper_pieces, party_quantity = keggy_store.get_store_value("last_command_args").values()
+            await ctx.invoke(command_to_rerun, copper_pieces, party_quantity)
+        elif keggy_store.get_store_value('last_command') == 'drink':
+            await ctx.invoke(command_to_rerun)
+        else:
+            args = { self.command_names[keggy_store.get_store_value('last_command')]: keggy_store.get_store_value('last_command_args')}
+            await ctx.invoke(command_to_rerun, **args)
 
 class DungeonsAndDragons(commands.Cog):
     def __init__(self, bot):
@@ -107,6 +138,7 @@ class DungeonsAndDragons(commands.Cog):
 
     @commands.command(name='item', brief='Keggy will look inside himself and try to deliever information about the item you requested.')
     async def item(self, ctx, *, item=None):
+        keggy_store.update_last_command('item', item)
         await ctx.send('Sure, boss! Coming right up!')
 
         if item == None:
@@ -129,6 +161,7 @@ class DungeonsAndDragons(commands.Cog):
 
     @commands.command(name='monster', brief='Keggy will look inside himself and try to deliver information about the monster you requested.')
     async def monster(self, ctx, *, monster_name=None):
+        keggy_store.update_last_command('monster', monster_name)
         await ctx.send('Sure, boss! Coming right up!')
 
         if monster_name == None:
@@ -196,6 +229,7 @@ class DungeonsAndDragons(commands.Cog):
 
     @commands.command(name='convert', brief='Keggy can convert coin denominations to coppers (cp) using this format: 12pp34gp56sp78cp.')
     async def convert(self, ctx, string_currency=None):
+        keggy_store.update_last_command('convert', string_currency)
         if (keggy_store.check_fritz()):
             response = response.get_random_fritz_message()
             await ctx.send(response)
@@ -212,6 +246,7 @@ class DungeonsAndDragons(commands.Cog):
     @commands.command(name='split', brief='Keggy can split up copper piece shares for each party member (default = 3). You can use `/convert` to convert a variety of pieces into copper pieces.')
     async def split(self, ctx, copper_pieces=None, party_quantity=None):
         default_party_quantity = 3
+        keggy_store.update_last_command('split', { "copper_pieces": copper_pieces, "party_quantity": party_quantity or default_party_quantity })
 
         if (keggy_store.check_fritz()):
             response = response.get_random_fritz_message()
@@ -252,5 +287,6 @@ class DungeonsAndDragons(commands.Cog):
 async def setup(bot):
     await bot.add_cog(KeggyHelp(bot))
     await bot.add_cog(KeggyFun(bot))
+    await bot.add_cog(KeggyUtils(bot))
     await bot.add_cog(DungeonsAndDragons(bot))
     
