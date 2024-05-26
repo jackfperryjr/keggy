@@ -57,10 +57,13 @@ class KeggyApi:
             m = monster_name.strip().replace(' ', '-').lower()
             r = requests.get(f'{self.monster_endpoint}/{m}')
             if 'error' in r.json():
-                with open('keggy_api.json', 'rb') as f:
+                with open('monsters.json', 'rb') as f:
                     monsters = json.load(f)['monsters']
                     m = [monster for monster in monsters if monster_name.lower() in monster.get('name').lower()]
-                return m[0]
+                    if len(m) > 0:
+                        return m[0]
+                    else:
+                        return r.json()
             else:
                 return r.json()
 
