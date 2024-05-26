@@ -98,6 +98,44 @@ class DungeonsAndDragons(commands.Cog):
     def __init__(self, bot):
         self.bot = bot
 
+    @commands.command(name='race', brief='Keggy will look inside himself and try to deliever information about the race you requested.')
+    async def race(self, ctx, *, race=None):
+        await ctx.send('Sure, boss! Coming right up!')
+
+        race_from_api = None
+        subrace_from_api = None
+
+        if race == None:
+            await ctx.send('Who were you looking for?')
+            return
+
+        race_from_api = api.get_race(race=race)
+
+        if 'error' in race_from_api:
+            subrace_from_api = api.get_subrace(subrace=race)
+            
+            if 'error' in subrace_from_api:
+                await ctx.send('Oh, uh, sorry boss... I actually don\'t know that one!')
+                return
+            else:
+                race_from_api = api.get_race(race=subrace_from_api['race']['index'])
+
+        embed_race = None
+        embed_subrace = None
+
+        if subrace_from_api == None:
+            embed_race = utils.embed_race(race_from_api)
+        else:
+            embed_race = utils.embed_race(race_from_api)
+            embed_subrace = utils.embed_race(subrace_from_api)
+
+        if embed_subrace == None:
+            await ctx.send(embed=embed_race)
+        else:
+            await ctx.send(embed=embed_subrace)
+            await ctx.send('In addition to the above, you also maintain the attributes of the base race below:')
+            await ctx.send(embed=embed_race)
+
     @commands.command(name='item', brief='Keggy will look inside himself and try to deliever information about the item you requested.')
     async def item(self, ctx, *, item=None):
         keggy_store.update_last_command('item', item)
@@ -130,7 +168,7 @@ class DungeonsAndDragons(commands.Cog):
             await ctx.send('What monster were you looking for?')
             return
 
-        monster_from_api = api.get_monsters(monster_name=monster_name)
+        monster_from_api = api.get_monster(monster_name=monster_name)
 
         if 'error' in monster_from_api:
             await ctx.send('Oh, uh, sorry boss... I actually don\'t know that one!')
@@ -143,8 +181,8 @@ class DungeonsAndDragons(commands.Cog):
         embed = discord.Embed(color=0x303136, title=monster_name.upper())
         embed.add_field(name='', value="---", inline=False)
         embed.add_field(name='', value=f'The **{monster_name}** is a *{monster_from_api["size"].lower()}* CR *{monster_from_api["challenge_rating"]}* *{monster_from_api["type"]}* type with *{monster_from_api["hit_points"]}* hit points. It can take the following actions and has the below stats:', inline=False)
-        embed.add_field(name='*STATS*', value=f'**STR**: {utils.get_stat_mod(monster_from_api["strength"])}\u1CBC\u1CBC\u1CBC\u1CBC\u1CBC\u1CBC**DEX**: {utils.get_stat_mod(monster_from_api["dexterity"])}\u1CBC\u1CBC\u1CBC\u1CBC\u1CBC\u1CBC**CON**: {utils.get_stat_mod(monster_from_api["constitution"])}\n**INT**: {utils.get_stat_mod(monster_from_api["intelligence"])}\u1CBC\u1CBC\u1CBC\u1CBC\u1CBC\u1CBC\u1CBC\u1CBC**WIS**: {utils.get_stat_mod(monster_from_api["wisdom"])}\u1CBC\u1CBC\u1CBC\u1CBC\u1CBC\u1CBC**CHA**: {utils.get_stat_mod(monster_from_api["charisma"])}', inline=True)
-        embed.add_field(name="", value=f'**AC**: {monster_from_api['armor_class']}, {monster_from_api['armor_desc']}', inline=False)
+        embed.add_field(name='*ABILITY SCORES*', value=f'**STR**: {utils.get_stat_mod(monster_from_api["strength"])} **DEX**: {utils.get_stat_mod(monster_from_api["dexterity"])} **CON**: {utils.get_stat_mod(monster_from_api["constitution"])}\n**INT**: {utils.get_stat_mod(monster_from_api["intelligence"])} **WIS**: {utils.get_stat_mod(monster_from_api["wisdom"])} **CHA**: {utils.get_stat_mod(monster_from_api["charisma"])}', inline=True)
+        embed.add_field(name="", value=f'**AC**: {monster_from_api['armor_class'][0]['value']}, {monster_from_api['armor_class'][0]['type']}', inline=False)
 
         embed.add_field(name='*SPEED*', value="", inline=False)
         for obj in monster_from_api['speed']:
@@ -167,23 +205,23 @@ class DungeonsAndDragons(commands.Cog):
             value = obj['desc']
             embed.add_field(name="", value=f'**{key}**: {value}', inline=False)
 
-        damage_vulnerabilities = monster_from_api['damage_vulnerabilities']
+        damage_vulnerabilities = ', '.join(monster_from_api['damage_vulnerabilities'])
         damage_vulnerabilities = 'N/a' if len(damage_vulnerabilities) == 0 else damage_vulnerabilities
         embed.add_field(name='*DMG VULNERABILITIES*', value=f'{damage_vulnerabilities}', inline=True)
 
-        damage_resistances = monster_from_api['damage_resistances']
+        damage_resistances = ', '.join(monster_from_api['damage_resistances'])
         damage_resistances = 'N/a' if len(damage_resistances) == 0 else damage_resistances
         embed.add_field(name='*DMG RESISTANCES*', value=f'{damage_resistances}', inline=True)
 
-        damage_immunities = monster_from_api['damage_immunities']
+        damage_immunities = ', '.join(monster_from_api['damage_immunities'])
         damage_immunities = 'N/a' if len(damage_immunities) == 0 else damage_immunities
         embed.add_field(name='*DMG IMMUNITIES*', value=f'{damage_immunities}', inline=True)
 
-        condition_immunities = monster_from_api['condition_immunities']
+        condition_immunities = ', '.join([x['name'] for x in monster_from_api['condition_immunities']])
         condition_immunities = 'N/a' if len(condition_immunities) == 0 else condition_immunities
         embed.add_field(name='*CONTITON IMMUNITIES*', value=f'{condition_immunities}', inline=True)
 
-        senses = monster_from_api['senses']
+        senses =  ', '.join(f'{key.replace("_", " ")} {val}' for key, val in monster_from_api['senses'].items())
         senses = 'N/a' if len(senses) == 0 else senses
         embed.add_field(name='*SENSES*', value=f'{senses.lower()}', inline=True)
 

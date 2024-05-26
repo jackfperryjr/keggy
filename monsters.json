@@ -1,0 +1,168 @@
+{
+    "monsters": [
+        {
+            "index": "quetzalcoatlus",
+	        "name": "Quetzalcoatlus",
+	        "size": "Huge",
+	        "type": "beast",
+	        "subtype": "dinosaur",
+	        "alignment": "unaligned",
+	        "armor_class": [
+                {
+                    "type": "natural",
+                    "value": 13
+                }
+	        ],
+	        "hit_points": 30,
+	        "hit_dice": "4d12+4",
+	        "hit_points_roll": "4d12",
+	        "speed": {
+	        	"fly": "30 ft.",
+                "walk": "10 ft."
+	        },
+	        "strength": 15,
+	        "dexterity": 13,
+	        "constitution": 13,
+	        "intelligence": 2,
+	        "wisdom": 10,
+	        "charisma": 5,
+	        "proficiencies": [],
+	        "damage_vulnerabilities": [],
+	        "damage_resistances": [],
+	        "damage_immunities": [],
+	        "condition_immunities": [],
+	        "senses": {
+	        	"passive_perception": 12
+	        },
+	        "languages": "",
+	        "challenge_rating": 2,
+	        "proficiency_bonus": 2,
+	        "xp": 450,
+	        "special_abilities": [
+	        	{
+	        		"name": "Flyby",
+	        		"desc": "The quetzalcoatlus doesn't provoke an opportunity attack when it flies out of an enemy's reach."
+	        	}
+	        ],
+	        "actions": [
+	        	{
+	        		"name": "Bite",
+	        		"desc": "Melee Weapon Attack: +4 to hit, reach 10 ft., one creature. Hit: 12 (3d6 + 2) piercing damage. If the quetzalcoatlus flew least 30 feet toward the target immediately before the hit, the target takes an extra 10 (3d6) piercing damage.",
+	        		"attack_bonus": 4,
+	        		"damage": [
+	        			{
+	        				"damage_type": {
+	        					"index": "piercing",
+	        					"name": "Piercing",
+	        					"url": "/api/damage-types/piercing"
+	        				},
+	        				"damage_dice": "3d6+2"
+	        			}
+	        		],
+	        		"actions": []
+	        	}
+	        ],
+	        "image": "https://www.aidedd.org/dnd/images/quetzalcoatlus.jpg",
+	        "url": "",
+	        "legendary_actions": []
+        },
+		{
+            "index": "redcap",
+	        "name": "Redcap",
+	        "size": "Small",
+	        "type": "fey",
+	        "subtype": "fey",
+	        "alignment": "chaotic evil",
+	        "armor_class": [
+                {
+                    "type": "natural",
+                    "value": 14
+                }
+	        ],
+	        "hit_points": 45,
+	        "hit_dice": "6d6+24",
+	        "hit_points_roll": "6d6",
+	        "speed": {
+                "walk": "25 ft."
+	        },
+	        "strength": 18,
+	        "dexterity": 13,
+	        "constitution": 18,
+	        "intelligence": 10,
+	        "wisdom": 12,
+	        "charisma": 9,
+	        "proficiencies": [],
+	        "damage_vulnerabilities": [],
+	        "damage_resistances": [],
+	        "damage_immunities": [],
+	        "condition_immunities": [],
+	        "senses": {
+	        	"passive_perception": 13,
+				"darkvision": "60 ft."
+	        },
+	        "languages": "Common, Sylvan",
+	        "challenge_rating": 3,
+	        "proficiency_bonus": 2,
+	        "xp": 700,
+	        "special_abilities": [
+	        	{
+	        		"name": "Iron Boots",
+	        		"desc": "While moving, the redcap has disadvantage on Dexterity (Stealth) checks."
+	        	},
+				{
+					"name": "Outsize Strength",
+					"desc": "While grappling, the redcap is considered to be Medium. Also, wielding a heavy weapon doesn't impose disadvantage on its attack rolls."
+				}
+	        ],
+	        "actions": [
+				{
+					"name": "Multiattack",
+					"multiattack_type": "actions",
+					"desc": "The redcap makes three attacks with its wicked sickle.",
+					"actions": [
+						{
+							"action_name": "Wicked Sickle",
+							"count": 3,
+							"type": "melee"
+						}
+					]
+				},
+                {
+	        		"name": "Ironbound Pursuit",
+	        		"desc": "The redcap moves up to its speed to a creature it can see and kicks with its iron boots. The target must succeed on a DC 14 Dexterity saving throw or take 20 (3d10 + 4) bludgeoning damage and be knocked prone.",
+	        		"attack_bonus": 4,
+	        		"damage": [
+	        			{
+	        				"damage_type": {
+	        					"index": "bludgeoning",
+	        					"name": "Bludgeoning",
+	        					"url": "/api/damage-types/bludgeoning"
+	        				},
+	        				"damage_dice": "3d10+4"
+	        			}
+	        		],
+	        		"actions": []
+	        	},
+				{
+	        		"name": "Wicked Sickle",
+	        		"desc": "Melee Weapon Attack: +6 to hit, reach 5 ft., one target. Hit: 9 (2d4 + 4) slashing damage.",
+	        		"attack_bonus": 6,
+	        		"damage": [
+	        			{
+	        				"damage_type": {
+	        					"index": "slashing",
+	        					"name": "Slashing",
+	        					"url": "/api/damage-types/slashing"
+	        				},
+	        				"damage_dice": "2d4+4"
+	        			}
+	        		],
+	        		"actions": []
+	        	}
+	        ],
+	        "image": "https://www.aidedd.org/dnd/images/redcap.jpg",
+	        "url": "",
+	        "legendary_actions": []
+        }
+    ]
+}
