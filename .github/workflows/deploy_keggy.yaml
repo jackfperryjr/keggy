@@ -19,7 +19,6 @@ jobs:
         username: ${{ secrets.SSH_USER }}
         password: ${{ secrets.SSH_PASS }}
         port: ${{ secrets.SSH_PORT }}
-        shell: bash
         script: |
           if ps ax | grep -v grep | grep keggy.py > /dev/null; then
             pkill -f keggy.py
