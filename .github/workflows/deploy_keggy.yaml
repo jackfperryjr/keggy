@@ -23,12 +23,8 @@ jobs:
           if ps ax | grep -v grep | grep keggy.py; then
             pkill -f keggy.py > /dev/null
           fi
-          sleep 1
           cd keggy
-          sleep 1
           git pull
-          sleep 3
-          nohup python3 keggy.py &
+          # nohup python3 keggy.py &
           exit
-        continue-on-error: true
           
