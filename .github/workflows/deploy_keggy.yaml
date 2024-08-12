@@ -29,5 +29,5 @@ jobs:
           git pull
           sleep 3
           nohup python3 keggy.py &
-          exit 0
+          exit
           
