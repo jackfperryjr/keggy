@@ -219,7 +219,7 @@ class DungeonsAndDragons(commands.Cog):
 
         condition_immunities = ', '.join([x['name'] for x in monster_from_api['condition_immunities']])
         condition_immunities = 'N/a' if len(condition_immunities) == 0 else condition_immunities
-        embed.add_field(name='*CONTITON IMMUNITIES*', value=f'{condition_immunities}', inline=True)
+        embed.add_field(name='*CONDITON IMMUNITIES*', value=f'{condition_immunities}', inline=True)
 
         senses =  ', '.join(f'{key.replace("_", " ")} {val}' for key, val in monster_from_api['senses'].items())
         senses = 'N/a' if len(senses) == 0 else senses
