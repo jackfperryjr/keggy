@@ -9,14 +9,14 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-    - name: checkout
+    - name: Checkout
       uses: actions/checkout@v2
 
-    - name: update and restart keggy
+    - name: Update and restart Keggy
       run: |
         echo "${{secrets.KEGGY_PEM}}" > keggy.pem
-        # ssh -i ~/.ssh/keggy.pem keggy_vm@{{secrets.KEGGY_IP}}
-        # ${{secrets.PASSPHRASE}}
+        ssh -i ~/.ssh/keggy.pem keggy_vm@{{secrets.KEGGY_IP}}
+        ${{secrets.PASSPHRASE}}
         # cd keggy
         # pkill -9 -f keggy.py
         # git pull
