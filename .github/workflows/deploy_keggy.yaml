@@ -20,7 +20,7 @@ jobs:
         password: ${{ secrets.SSH_PASS }}
         port: ${{ secrets.SSH_PORT }}
         script: |
-          pkill -9 -f keggy.py &>/dev/null
+          kill $(ps aux | grep '[p]ython3 keggy.py' | awk '{print $2}')
           cd keggy
           git pull
           python3 keggy.py
