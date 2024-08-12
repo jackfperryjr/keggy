@@ -20,7 +20,7 @@ jobs:
         password: ${{ secrets.SSH_PASS }}
         port: ${{ secrets.SSH_PORT }}
         script: |
+          pkill -9 -f keggy.py &>/dev/null
           cd keggy
-          pkill -9 -f keggy.py
           git pull
           python3 keggy.py
