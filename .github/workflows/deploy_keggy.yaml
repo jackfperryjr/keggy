@@ -20,8 +20,8 @@ jobs:
         password: ${{ secrets.SSH_PASS }}
         port: ${{ secrets.SSH_PORT }}
         script: |
-          if ps ax | grep -v grep | grep keggy.py > /dev/null; then
-            pkill -f keggy.py
+          if ps ax | grep -v grep | grep keggy.py; then
+            pkill -f keggy.py > /dev/null
           fi
           sleep 3
           cd keggy
