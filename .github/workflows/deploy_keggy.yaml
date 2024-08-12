@@ -1,0 +1,22 @@
+name: deploy keggy
+on:
+  push:
+    branches: [ main ]
+  workflow_dispatch:
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: checkout
+      uses: actions/checkout@v2
+
+    - name: update and restart keggy
+      run: |
+        ssh -i ~/.ssh/${{secrets.KEGGY_PEM}} keggy_vm@{{secrets.KEGGY_IP}}
+        ${{secrets.PASSPHRASE}}
+        cd keggy
+        pkill -9 -f keggy.py
+        git pull
+        nohup python3 keggy.py &
