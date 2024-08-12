@@ -19,7 +19,6 @@ jobs:
         username: ${{ secrets.SSH_USER }}
         password: ${{ secrets.SSH_PASS }}
         port: ${{ secrets.SSH_PORT }}
-        key: ${{ secrets.SSH_KEY }}
         script: |
           cd keggy
           pkill -9 -f keggy.py
