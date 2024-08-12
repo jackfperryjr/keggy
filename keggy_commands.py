@@ -182,7 +182,7 @@ class DungeonsAndDragons(commands.Cog):
         embed.add_field(name='', value="---", inline=False)
         embed.add_field(name='', value=f'The **{monster_name}** is a *{monster_from_api["size"].lower()}* CR *{monster_from_api["challenge_rating"]}* *{monster_from_api["type"]}* type with *{monster_from_api["hit_points"]}* hit points. It can take the following actions and has the below stats:', inline=False)
         embed.add_field(name='*ABILITY SCORES*', value=f'**STR**: {utils.get_stat_mod(monster_from_api["strength"])} **DEX**: {utils.get_stat_mod(monster_from_api["dexterity"])} **CON**: {utils.get_stat_mod(monster_from_api["constitution"])}\n**INT**: {utils.get_stat_mod(monster_from_api["intelligence"])} **WIS**: {utils.get_stat_mod(monster_from_api["wisdom"])} **CHA**: {utils.get_stat_mod(monster_from_api["charisma"])}', inline=True)
-        embed.add_field(name="", value=f'**AC**: {monster_from_api['armor_class'][0]['value']}, {monster_from_api['armor_class'][0]['type']}', inline=False)
+        embed.add_field(name="", value=f"**AC**: {monster_from_api['armor_class'][0]['value']}, {monster_from_api['armor_class'][0]['type']}", inline=False)
 
         embed.add_field(name='*SPEED*', value="", inline=False)
         for obj in monster_from_api['speed']:
