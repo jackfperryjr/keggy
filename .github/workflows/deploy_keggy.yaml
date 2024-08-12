@@ -20,9 +20,8 @@ jobs:
         password: ${{ secrets.SSH_PASS }}
         port: ${{ secrets.SSH_PORT }}
         script: |
-          pid=$(ps aux | grep '[p]ython3 keggy.py' | awk '{print $2}')
-          if ps ax | grep -v grep | grep $pid > /dev/null; then
-            kill -9 $pid
+          if ps ax | grep -v grep | grep keggy.py > /dev/null; then
+            pkill -f keggy.py
           fi
           sleep 3
           cd keggy
