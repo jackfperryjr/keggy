@@ -19,6 +19,7 @@ jobs:
         username: ${{ secrets.SSH_USER }}
         password: ${{ secrets.SSH_PASS }}
         port: ${{ secrets.SSH_PORT }}
+        shell: bash
         script: |
           if ps ax | grep -v grep | grep keggy.py > /dev/null; then
             pkill -f keggy.py
@@ -29,5 +30,5 @@ jobs:
           git pull
           sleep 3
           nohup python3 keggy.py &
-          exit 1
+          exit 0
           
