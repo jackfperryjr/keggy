@@ -16,7 +16,6 @@ jobs:
       run: |
         echo "${{secrets.KEGGY_PEM}}" > keggy_vm_key.pem
         ssh -T -i keggy_vm_key.pem keggy_vm@68.154.104.134
-        echo "${{secrets.PASSPHRASE}}"
         # cd keggy
         # pkill -9 -f keggy.py
         # git pull
