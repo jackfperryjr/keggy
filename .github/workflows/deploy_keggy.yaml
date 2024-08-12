@@ -14,7 +14,8 @@ jobs:
 
     - name: update and restart keggy
       run: |
-        ssh -i ~/.ssh/${{secrets.KEGGY_PEM}} keggy_vm@{{secrets.KEGGY_IP}}
+        echo ${{secrets.KEGGY_PEM}} > keggy.pem
+        ssh -i ~/.ssh/keggy.pem keggy_vm@{{secrets.KEGGY_IP}}
         ${{secrets.PASSPHRASE}}
         cd keggy
         pkill -9 -f keggy.py
