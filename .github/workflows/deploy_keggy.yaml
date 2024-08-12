@@ -21,6 +21,7 @@ jobs:
         port: ${{ secrets.SSH_PORT }}
         script: |
           kill $(ps aux | grep '[p]ython3 keggy.py' | awk '{print $2}') > /dev/null 2>&1 &
+          sleep 3
           cd keggy
           git pull
           python3 keggy.py
