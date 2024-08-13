@@ -38,43 +38,15 @@ jobs:
     - name: Checkout
       uses: actions/checkout@v4
 
-    - name: Setup Node.js
-      uses: actions/setup-node@v3
-      with:
-        node-version: "16.x"
-    - name: Install dependencies
-      run: npm install
-    - name: Build
-      run: npm run build
-    - name: Set up Git
-      run: |
-        git config user.name "Keggy"
-        git config user.email "keggy@kegerator.com"
-    - name: Get Tag
-      id: get_tag
-      run: |
-        git branch --show-current
-        git pull
-        echo "version=v$(npm pkg get version | tr -d '\"')" >> $GITHUB_OUTPUT
-    - name: Tag the Commit
-      run: |
-        next_version=${{ steps.get_tag.outputs.version }}
-        git tag -a "$next_version" -m "Version $next_version"
-        git push --follow-tags
-    - name: Create Changelog Diff
-      id: changelog_diff
-      run: |
-        sed -n "/^## \[${{ steps.get_tag.outputs.version }}\]/,/^## \[$(git describe --abbrev=0 --tags $(git rev-list --tags --skip=1 --max-count=1))\]/{/^## \[$(git describe --abbrev=0 --tags $(git rev-list --tags --skip=1 --max-count=1))\]/!p;}" CHANGELOG.md > release_notes.md
+    - name: Get Versioning Data
+      id: versioning
+      uses: Soumeh/Auto-Versioning@main
+      
     - name: Create Release
-      id: create_release
-      uses: actions/create-release@v1
-      env:
-        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      uses: meeDamian/github-release@2.0
       with:
-        tag_name: ${{ steps.get_tag.outputs.version }}
-        release_name: Release ${{ steps.get_tag.outputs.version }}
-        body_path: ./release_notes.md
-        draft: false
-        prerelease: false
-    - name: Delete release_notes File
-      run: rm release_notes.md
+        token: ${{ secrets.GITHUB_TOKEN }}
+        name: ${{ github.event.head_commit.message }}
+        tag: ${{ steps.versioning.outputs.tag }}
+        body: "${{ steps.versioning.outputs.changelog }}"
+        gzip: false
