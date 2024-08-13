@@ -30,6 +30,6 @@ jobs:
           cd keggy
           git pull -q 2>&1 | cat
           sleep 3
-          nohup python3 keggy.py > nohup.out 2> nohup.err < /dev/null 
+          nohup python3 keggy.py >/dev/null 2>&1 &
           exit
           
