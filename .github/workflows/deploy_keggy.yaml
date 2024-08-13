@@ -30,8 +30,7 @@ jobs:
           cd keggy
           git pull -q 2>&1 | cat
           sleep 3
-          nohup python3 keggy.py &
+          nohup python3 keggy.py & >2&1 
           sleep 3
-          ~.
           exit
           
