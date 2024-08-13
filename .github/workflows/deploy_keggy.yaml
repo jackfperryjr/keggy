@@ -51,7 +51,7 @@ jobs:
       uses: meeDamian/github-release@2.0
       with:
         token: ${{ secrets.GITHUB_TOKEN }}
-        name: ${{ github.event.head_commit.message }}
+        name: ${{ steps.versioning.outputs.tag }} - ${{ github.event.head_commit.message }}
         tag: ${{ steps.versioning.outputs.tag }}
         body: "${{ steps.versioning.outputs.changelog }}"
         gzip: false
