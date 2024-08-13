@@ -26,9 +26,12 @@ jobs:
           do
             kill "$pid"
           done
+          sleep 3
           cd keggy
-          git pull
+          git pull -q 2>&1 | cat
+          sleep 3
           nohup python3 keggy.py &
+          sleep 3
           ~.
           exit
           
