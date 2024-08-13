@@ -20,11 +20,15 @@ jobs:
         password: ${{ secrets.SSH_PASS }}
         port: ${{ secrets.SSH_PORT }}
         script: |
-          if ps ax | grep -v grep | grep keggy.py; then
-            pkill -f keggy.py > /dev/null
-          fi
+          for pid in $(ps -ef |
+            awk -v first="$1" -v second="$2" -v app="keggy.py" '
+              $0 ~ first && $0 ~ second && $0 ~ app && !/awk/ {print $2}')
+          do
+            kill "$pid"
+          done
           cd keggy
           git pull
-          # nohup python3 keggy.py &
+          nohup python3 keggy.py &
+          ~.
           exit
           
